@@ -17,8 +17,12 @@
       "dest": "/api/data.js"
     },
     {
+      "src": "/assets/(.*)",
+      "dest": "/frontend/dist/assets/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/frontend"
+      "dest": "/frontend/dist/index.html"
     }
   ]
 }
