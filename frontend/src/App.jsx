@@ -8,15 +8,24 @@ function App() {
 
   useEffect(() => {
     axios.get('/api/data')
-      .then(res => setData(res.data))
-      .catch(err => console.error(err));
+      .then(res => {
+        console.log('Resposta da API:', res.data); // Adicione isso para debug
+        setData(Array.isArray(res.data) ? res.data : []);
+      })
+      .catch(err => {
+        console.error('Erro na requisição:', err);
+        setData([]); // Em caso de erro, mantém como array vazio
+      });
   }, []);
 
   const handleSubmit = () => {
     axios.post('/api/data', { name: input })
-      .then(res => setData([...data, res.data[0]]))
-      .catch(err => console.error(err));
-    setInput('');
+      .then(res => {
+        console.log('Resposta do POST:', res.data); // Debug
+        setData(prevData => [...prevData, res.data[0]]); // Usa prevData para evitar sobrescrever
+        setInput('');
+      })
+      .catch(err => console.error('Erro no POST:', err));
   };
 
   return (
@@ -31,11 +40,17 @@ function App() {
       <button onClick={handleSubmit} className="bg-blue-500 text-white p-2 rounded">
         Enviar
       </button>
-      <ul className="mt-4">
-        {data.map((item, index) => (
-          <li key={index} className="border-b py-2">{item.name}</li>
-        ))}
-      </ul>
+      {Array.isArray(data) && data.length > 0 ? (
+        <ul className="mt-4">
+          {data.map((item, index) => (
+            <li key={index} className="border-b py-2">
+              {item.name || 'Sem nome'}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-4">Nenhum dado disponível</p>
+      )}
     </div>
   );
 }
