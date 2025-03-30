@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 function App() {
   const [pessoas, setDados] = useState([]);
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  // ENDPOINT PARA TABELA PESSOAS
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/pessoas`)
+    fetch(`${backendUrl}/pessoas`)
       .then((res) => res.json())
       .then((data) => setDados(data))
       .catch((err) => console.error(err));
