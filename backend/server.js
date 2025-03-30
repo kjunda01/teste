@@ -10,7 +10,7 @@ app.use(express.json());
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 app.get("/", (req, res) => {
-  res.send("API funcionando!");
+  res.send({ mensagem: "API FUNCIONANDO!", endpoints: "/pessoas" });
 });
 
 app.get("/pessoas", async (req, res) => {
