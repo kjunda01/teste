@@ -20,4 +20,4 @@ app.post('/data', async (req, res) => {
   res.status(201).json(data);
 });
 
-app.listen(process.env.PORT || 3000, () => console.log(`Backend rodando na porta ${process.env.PORT}`));
+app.listen(process.env.PORT || 3000, () => console.log('Backend rodando'));
