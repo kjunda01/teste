@@ -4,7 +4,6 @@ import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
 import { ThemeProvider } from "./contexts/ThemeContext.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { SpeedInsights } from "@vercel/speed-insights/react";
 
 import Entrar from "./pages/login/Entrar.jsx";
 import NovoUsuario from "./pages/login/NovoUsuario.jsx";
