@@ -31,7 +31,6 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider>
       <RouterProvider router={router} />
-      <SpeedInsights />
     </ThemeProvider>
   </StrictMode>
 );
