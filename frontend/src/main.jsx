@@ -16,12 +16,12 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
-      { path: "/login", element: <Entrar /> },
-      { path: "/cadastrar", element: <NovoUsuario /> },
-      { path: "/home", element: <AoVivo /> },
-      { path: "/cadastrar", element: <AoVivo /> },
-      { path: "/recuperar", element: <RecuperarUsuario /> },
-      { path: "/contato", element: <Contato /> },
+      { index: true, element: <Entrar /> },
+      { path: "login", element: <Entrar /> },
+      { path: "cadastrar", element: <NovoUsuario /> },
+      { path: "home", element: <AoVivo /> },
+      { path: "recuperar", element: <RecuperarUsuario /> },
+      { path: "contato", element: <Contato /> },
     ],
   },
 ]);

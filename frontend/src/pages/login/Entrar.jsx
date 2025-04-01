@@ -158,7 +158,7 @@ const Entrar = () => {
           {/* Esqueci a Senha */}
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              <Link to="/recuperar" href="#" className="text-sky-500 hover:text-blue-950">
+              <Link to="/recuperar" className="text-sky-500 hover:text-blue-950">
                 Esqueceu sua senha?
               </Link>
             </p>
@@ -169,7 +169,7 @@ const Entrar = () => {
         <div className="mt-6 text-center text-sm text-gray-500">
           <p>Todos os direitos reservados a Unilavras</p>
           <p>
-            <Link to="/contato" href="#" className="text-sky-500 hover:text-blue-950">
+            <Link to="/contato" className="text-sky-500 hover:text-blue-950">
               Contato
             </Link>
           </p>
