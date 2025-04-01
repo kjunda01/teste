@@ -5,7 +5,7 @@ import axios from "axios";
 
 
 const Entrar = () => {
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
   const [usuario, setUsuario] = useState({ email: "", password: "" });
 
   const handleChange = (event) => {
