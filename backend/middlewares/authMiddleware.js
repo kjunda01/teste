@@ -1,23 +1,35 @@
+// middleware/authMiddleware.js
 import supabase from "../config/supabaseClient.js";
 
 const authMiddleware = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  try {
+    const authHeader = req.headers.authorization;
 
-  if (!token) {
-    return res.status(401).json({ error: "401 - Token não fornecido" });
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "401 - Token não fornecido ou inválido" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(token);
+
+    if (error) {
+      return res.status(401).json({ error: "401 - Token inválido ou expirado" });
+    }
+
+    if (!user) {
+      return res.status(403).json({ error: "403 - Acesso negado" });
+    }
+
+    req.user = user;
+    next();
+  } catch (err) {
+    console.error("Erro no authMiddleware:", err);
+    return res.status(500).json({ error: "500 - Erro interno do servidor" });
   }
-
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser(token);
-
-  if (error || !user) {
-    return res.status(401).json({ error: "401 - Não autorizado" });
-  }
-
-  req.user = user;
-  next();
 };
 
 export default authMiddleware;
