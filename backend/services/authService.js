@@ -1,4 +1,14 @@
 import supabase from "../config/supabaseClient.js";
+import supabaseAdmin from "../config/supabaseServiceRoleClient.js";
+
+// Função para verificar se usuario existe
+export const getUserByEmailService = async (email) => {
+  const { data, error } = await supabaseAdmin.auth.admin.listUsers();
+  const user = data.users.find((user) => user.email === email);
+
+  if (error) throw new Error(error.message);
+  return user;
+};
 
 // Função para signUp
 export const signUpService = async (email, password) => {
