@@ -1,5 +1,9 @@
-// authController.js
-import { signUpService, signInWithPasswordService, resetPasswordForEmailService } from "../services/authService.js";
+import {
+  signUpService,
+  signInWithPasswordService,
+  resetPasswordForEmailService,
+  getUserByEmailService,
+} from "../services/authService.js";
 
 // Método para realizar signUp
 export const signUpController = async (req, res) => {
@@ -11,14 +15,21 @@ export const signUpController = async (req, res) => {
   }
 
   try {
-    // Chama o serviço para realizar o login
+    // Verifica se o usuário já existe
+    const userExists = await getUserByEmailService(email); // ✅ Agora está correto
+
+    if (userExists) {
+      return res.status(400).json({ error: "Usuário já existe!" });
+    }
+
+    // Chama o serviço para criar o usuário
     const data = await signUpService(email, password);
 
-    // Retorna os dados do usuário autenticado
-    res.status(200).json({ message: "Criação de usuário bem-sucedida!", data });
+    // Retorna os dados do usuário criado
+    res.status(201).json({ message: "Usuário criado com sucesso!", data });
   } catch (error) {
     // Trata erros e retorna uma resposta adequada
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 

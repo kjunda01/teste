@@ -13,6 +13,6 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 
 
-app.use(logger); // ✅ Loga todas as requisições
-app.use(errorHandler); // ✅ Captura erros em toda a aplicação
+//app.use(logger); // ✅ Loga todas as requisições
+//app.use(errorHandler); // ✅ Captura erros em toda a aplicação
 export default app;
