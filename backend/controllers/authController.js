@@ -48,7 +48,7 @@ export const resetPasswordForEmailController = async (req, res) => {
 
   // Validação básica dos dados
   if (!email || !password) {
-    return res.status(400).json({ error: "Email e senha são obrigatórios" });
+    return res.status(400).json({ error: "Email obrigatório." });
   }
 
   try {
