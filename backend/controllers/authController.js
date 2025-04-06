@@ -41,6 +41,11 @@ export const signInWithPasswordController = async (req, res) => {
   if (!email || !password) {
     return res.status(400).json({ error: "Email e senha são obrigatórios" });
   }
+
+  if (getUserByEmailService(email)) {
+    return res.status(400).json({error: "E-mail não existe na base de dados!"})
+  }
+
   try {
     // Chama o serviço para realizar o login
     const data = await signInWithPasswordService(email, password);
