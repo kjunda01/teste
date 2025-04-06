@@ -6,10 +6,14 @@ import {
   updateUserController,
 } from "../controllers/authController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const router = express.Router();
 
 // Rotas abertas (sem autenticação)
+router.get("/", (res) => {res.redirect(process.env.FRONTEND_URL)});
 router.post("/signup", signUpController);
 router.post("/signinwithpassword", signInWithPasswordController);
 
