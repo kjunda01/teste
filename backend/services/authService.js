@@ -4,10 +4,12 @@ import supabaseAdmin from "../config/supabaseServiceRoleClient.js";
 // Função para verificar se usuario existe
 export const getUserByEmailService = async (email) => {
   const { data, error } = await supabaseAdmin.auth.admin.listUsers();
+
+  if (error) throw error;
+
   const user = data.users.find((user) => user.email === email);
 
-  if (error) throw new Error(error.message);
-  return user;
+  return user || null;
 };
 
 // Função para signUp
@@ -31,11 +33,10 @@ export const signUpService = async (email, password) => {
 export const signInWithPasswordService = async (email, password) => {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-  
   // if (!data.user?.confirmed_at) {
   //   throw new Error("Conta ainda não confirmada. Verifique seu e-mail.");
   // }
-  
+
   if (error) throw new Error(error.message);
 
   return {
@@ -69,7 +70,7 @@ export const getSessionService = async () => {
 
 // Função para signOut
 export const signOutService = async () => {
-  const { error } = await supabase.auth.signOut();
+  const { data, error } = await supabase.auth.signOut();
   if (error) throw new Error(error.message);
   return data;
 };

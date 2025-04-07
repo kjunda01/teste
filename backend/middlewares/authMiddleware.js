@@ -6,7 +6,7 @@ const authMiddleware = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ error: "401 - Token não fornecido ou inválido" });
+      return res.status(401).json({ error: "Token não fornecido ou inválido" });
     }
 
     const token = authHeader.split(" ")[1];
@@ -17,7 +17,7 @@ const authMiddleware = async (req, res, next) => {
     } = await supabase.auth.getUser(token);
 
     if (error) {
-      return res.status(401).json({ error: "401 - Token inválido ou expirado" });
+      return res.status(401).json({ error: "Token inválido ou expirado" });
     }
 
     if (!user) {
@@ -28,7 +28,7 @@ const authMiddleware = async (req, res, next) => {
     next();
   } catch (err) {
     console.error("Erro no authMiddleware:", err);
-    return res.status(500).json({ error: "500 - Erro interno do servidor" });
+    return res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
 

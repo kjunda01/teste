@@ -10,29 +10,39 @@ import {
 // Método para realizar signUp
 export const signUpController = async (req, res) => {
   const { email, password } = req.body;
+  
 
   // Validação básica dos dados
   if (!email || !password) {
     return res.status(400).json({ error: "Email e senha são obrigatórios" });
   }
 
-  try {
+  // try {
     // Verifica se o usuário já existe
     const userExists = await getUserByEmailService(email);
 
     if (userExists) {
-      return res.status(400).json({ error: "Usuário já existe!" });
+      return res.status(409).json({ message: 'Usuário já existe' });
     }
 
     // Chama o serviço para criar o usuário
-    const data = await signUpService(email, password);
+    const {data, error} = await signUpService(email, password);
 
     // Retorna os dados do usuário criado
-    res.status(201).json({ message: "Usuário criado com sucesso!", data });
-  } catch (error) {
-    // Trata erros e retorna uma resposta adequada
-    res.status(500).json({ error: error.message });
-  }
+    if (error) {
+      console.log(error)
+      return res.status(500).json({ message: 'Erro ao criar usuário', error });
+    }
+    
+    return res.status(201).json({ message: 'Usuário criado com sucesso!', data });
+
+
+  // } catch (error) {
+  //   // Trata erros e retorna uma resposta adequada
+  //   console.log(`first`)
+  //   return res.status(500).json({ message: 'Erro interno', error: error.message });
+
+  // }
 };
 
 // Método para realizar signInWithPassword
@@ -44,7 +54,8 @@ export const signInWithPasswordController = async (req, res) => {
     return res.status(400).json({ error: "Email e senha são obrigatórios" });
   }
 
-  if (getUserByEmailService(email)) {
+  // se o usuário nao existir ele retorna erro
+  if (!getUserByEmailService(email)) {
     return res.status(400).json({error: "E-mail não existe na base de dados!"})
   }
 
@@ -104,19 +115,12 @@ export const updateUserController = async (req, res) => {
 
 // Método para realizar signOut
 export const signOutController = async (req, res) => {
-  // const { email, password } = req.body;
-
-  // Validação básica dos dados
-  // if (!email || !password) {
-  //   return res.status(400).json({ error: "Email e senha são obrigatórios" });
-  // }
-
-  try {
+   try {
     // Chama o serviço para realizar o logout
     const data = await signOutService();
 
     // Retorna os dados do usuário autenticado
-    res.status(200).json({ message: "Usuário deslogado!", data });
+    res.status(200).json({ message: "Usuário deslogado!"});
   } catch (error) {
     // Trata erros e retorna uma resposta adequada
     res.status(400).json({ error: error.message });
