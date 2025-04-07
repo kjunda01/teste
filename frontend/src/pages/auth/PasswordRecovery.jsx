@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import PessoaSVG from "../../assets/svgs/PessoaSVG";
 
-const RecuperarUsuario = () => {
+const PasswordRecovery = () => {
   const API_URL = import.meta.env.VITE_BACKEND_URL;
   const [email, setEmail] = useState("");
 
@@ -107,4 +107,4 @@ const RecuperarUsuario = () => {
   );
 };
 
-export default RecuperarUsuario;
+export default PasswordRecovery;

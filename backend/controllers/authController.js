@@ -3,6 +3,8 @@ import {
   signInWithPasswordService,
   resetPasswordForEmailService,
   getUserByEmailService,
+  signOutService,
+  getSessionService,
 } from "../services/authService.js";
 
 // Método para realizar signUp
@@ -16,7 +18,7 @@ export const signUpController = async (req, res) => {
 
   try {
     // Verifica se o usuário já existe
-    const userExists = await getUserByEmailService(email); // ✅ Agora está correto
+    const userExists = await getUserByEmailService(email);
 
     if (userExists) {
       return res.status(400).json({ error: "Usuário já existe!" });
@@ -94,6 +96,71 @@ export const updateUserController = async (req, res) => {
 
     // Retorna os dados do usuário autenticado
     res.status(200).json({ message: "Atualização de dados de usuário bem-sucedida!", data });
+  } catch (error) {
+    // Trata erros e retorna uma resposta adequada
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Método para realizar signOut
+export const signOutController = async (req, res) => {
+  // const { email, password } = req.body;
+
+  // Validação básica dos dados
+  // if (!email || !password) {
+  //   return res.status(400).json({ error: "Email e senha são obrigatórios" });
+  // }
+
+  try {
+    // Chama o serviço para realizar o logout
+    const data = await signOutService();
+
+    // Retorna os dados do usuário autenticado
+    res.status(200).json({ message: "Usuário deslogado!", data });
+  } catch (error) {
+    // Trata erros e retorna uma resposta adequada
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Método para realizar getSession
+export const getSessionController = async (req, res) => {
+  console.log(req)
+  // const { email, password } = req.body;
+
+  // // Validação básica dos dados
+  // if (!email || !password) {
+  //   return res.status(400).json({ error: "Email obrigatório." });
+  // }
+
+  try {
+    // Chama o serviço para realizar o getSession
+    const data = await getSessionService();
+
+    // Retorna os dados do usuário autenticado
+    res.status(200).json({ message: "Sessão não encontada", data });
+  } catch (error) {
+    // Trata erros e retorna uma resposta adequada
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Método para realizar onAuthStateChange
+export const onAuthStateChangeController = async (req, res) => {
+  console.log(req)
+  // const { email, password } = req.body;
+
+  // // Validação básica dos dados
+  // if (!email || !password) {
+  //   return res.status(400).json({ error: "Email obrigatório." });
+  // }
+
+  try {
+    // Chama o serviço para realizar o onAuthStateChange
+    const data = await onAuthStateChangeService();
+
+    // Retorna os dados do usuário autenticado
+    res.status(200).json({ message: "Sessão não encontada", data });
   } catch (error) {
     // Trata erros e retorna uma resposta adequada
     res.status(400).json({ error: error.message });
