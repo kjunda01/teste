@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { toast } from "react-toastify";
+
 import PessoaSVG from "../../assets/svgs/PessoaSVG";
 import OlhoFechadoSVG from "../../assets/svgs/OlhoFechadoSVG";
 import OlhoAbertoSVG from "../../assets/svgs/OlhoAbertoSVG";
-import { toast } from "react-toastify";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const Login = () => {
   const [usuario, setUsuario] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [erroDaApi, setErroDaApi] = useState("");
   const navigate = useNavigate();
+  const { signInWithPassword } = useContext(AuthContext);
 
   const showPasswordIcon = () => {
     showPassword ? setShowPassword(false) : setShowPassword(true);
@@ -17,40 +20,48 @@ const Login = () => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setUsuario((prevUsuario) => ({
-      ...prevUsuario,
-      [name]: value,
-    }));
+    setUsuario((prevUsuario) => ({ ...prevUsuario, [name]: value }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signinwithpassword`, usuario);
-      
-      navigate(`/aovivo`);
+      const { success, user, error } = await signInWithPassword(usuario.email, usuario.password);
 
+      if (success) {
+        toast.success("Bem vindo(a), " + user.data.email);
+        navigate("/home");
+      } else {
+        toast.error(error);
+        throw new Error(error);
+      }
     } catch (error) {
-      toast.error(`Erro ao fazer login:`, error.response?.message || error.message);
-      console.error("Erro ao fazer login:", error.response?.message || error.message);
+      // console.error("Erro completo:", error); // Mostra tudo
+      // console.error("Erro.response:", error.response); // Mostra a resposta da API
+      // console.error("Erro.response.data:", error.response?.data); // Mostra os dados de erro enviados pelo backend
+      //const msg = error.response?.data?.error || "Erro ao fazer login conta";
+      //setErroDaApi(msg);
+      //toast.error(msg);
+      toast.error(error);
+      setErroDaApi(error);
     }
   };
 
   return (
-    <div className="flex items-center justify-center w-screen h-screen bg-white md:bg-gray-200">
-      <div className="p-6 bg-white w-screen md:w-2xl md:rounded-xl">
+    <div className="flex items-center justify-center min-h-screen bg-white md:bg-gray-200">
+      <div className="m-0 h-full w-full p-6 bg-white md:rounded-lg md:shadow-2xl md:w-md lg:w-lg xl:w-xl 2xl:w-2xl ">
         {/* Título */}
-        <div className="flex flex-col items-center text-center justify-center h-full">
-          <Link to="https://unilavras.edu.br/0">
+        <div className="flex flex-col items-center text-center justify-center">
+          <a href="https://unilavras.edu.br/0" target="_blank">
             <img
               src="https://novoportal.unilavras.edu.br/assets/svg/logo-full.svg"
               alt=""
-              className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24"
+              className="w-14 h-14 md:w-18 md:h-18 lg:w-22 lg:h-22"
             />
-          </Link>
+          </a>
 
-          <h1 className="text-3xl font-semibold text-center ">
+          <h1 className="text-3xl font-semibold text-center mb-4">
             <span className="text-sky-500 font-helvetica">UNI</span>
             <span className="text-blue-950 font-bold">PARK</span>
           </h1>
@@ -58,10 +69,10 @@ const Login = () => {
         <h2 className="text-xl font-medium text-center mb-6">Login</h2>
 
         {/* Texto de inscrição */}
-        <p className="text-center text-gray-600 ">
+        <p className="text-center text-gray-600 mb-4">
           Não possui uma conta? <span></span>
           <Link to="/signup" className="text-blue-500 hover:text-blue-950 text-xs">
-            Crie uma conta agora!
+            Crie uma agora mesmo!
           </Link>
         </p>
 
@@ -72,18 +83,21 @@ const Login = () => {
             <label htmlFor="email" className="font-bold">
               Email
             </label>
-            <div className="relative">
+            <div className="flex flex-row">
               <input
-                type="email"
+                type="text"
                 id="email"
                 name="email"
-                className="bg-gray-50 w-full px-4 py-2 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className={`bg-gray-50 w-full px-4 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 ${
+                  erroDaApi ? "border-red-300 ring-red-300" : "border-gray-300 focus:ring-blue-400"
+                }`}
                 aria-required="true"
                 placeholder="Digite seu email"
+                autoComplete="true"
                 value={usuario.email}
                 onChange={handleChange}
               />
-              <div className="absolute right-0 top-0 bottom-0 my-auto flex items-center justify-center bg-gray-200 px-2 py-2 rounded-r-md">
+              <div className="flex items-center justify-center bg-gray-200 ml-2 p-2 rounded cursor-default">
                 <PessoaSVG />
               </div>
             </div>
@@ -94,19 +108,22 @@ const Login = () => {
             <label htmlFor="password" className="font-bold">
               Senha
             </label>
-            <div className="relative">
+            <div className="flex flex-row">
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
-                className="bg-gray-50 w-full px-4 py-2 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className={`bg-gray-50 w-full px-4 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 ${
+                  erroDaApi ? "border-red-300 ring-red-300" : "border-gray-300 focus:ring-blue-400"
+                }`}
                 aria-required="true"
+                autoComplete="true"
                 placeholder="Digite sua senha"
                 value={usuario.password}
                 onChange={handleChange}
               />
               <div
-                className="absolute right-0 top-0 bottom-0 my-auto flex items-center justify-center bg-gray-200 px-2 py-2 rounded-r-md cursor-pointer"
+                className=" flex items-center justify-center bg-gray-200 ml-2 p-2 rounded cursor-pointer"
                 onClick={showPasswordIcon}
               >
                 {showPassword ? <OlhoAbertoSVG /> : <OlhoFechadoSVG />}
@@ -118,15 +135,15 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className="w-full p-2 bg-sky-500 text-white font-semibold rounded-md hover:bg-blue-950 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+              className="w-full py-2 bg-sky-500 text-white font-semibold rounded-md hover:bg-blue-950 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
             >
-              Acessar
+              Entrar
             </button>
           </div>
 
           {/* Esqueci a Senha */}
           <div className="text-center">
-            <p className="text-md text-gray-600">
+            <p className="text-sm text-gray-600">
               <Link to="/recuperar" className="text-sky-500 hover:text-blue-950">
                 Esqueceu sua senha?
               </Link>
@@ -135,7 +152,7 @@ const Login = () => {
         </form>
 
         {/* Rodapé */}
-        <div className="mt-2 text-center text-sm text-gray-500">
+        <div className="mt-6 text-center text-sm text-gray-500">
           <p>Todos os direitos reservados a Unilavras</p>
           <p>
             <Link to="/contato" className="text-sky-500 hover:text-blue-950">

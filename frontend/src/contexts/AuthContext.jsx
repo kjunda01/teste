@@ -1,48 +1,48 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import axios from "axios";
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Verifica se há sessão ativa
-  const fetchSession = async () => {
-    const token = localStorage.getItem("access_token");
-    if (!token) return setLoading(false);
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) setUser(JSON.parse(savedUser));
+    setLoading(false); 
+  }, []);
 
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
+
+  const signInWithPassword = async (email, password) => {
     try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/getsession`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setUser(data.user);
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signinwithpassword`, { email, password });
+      setUser(data);
+      return { success: true, user: data };
     } catch (error) {
-      console.warn("Sessão inválida");
-      localStorage.removeItem("access_token");
-    } finally {
-      setLoading(false);
+      const msg = error.response?.data?.error || "Erro ao fazer login";
+      return { success: false, error: msg };
     }
   };
 
-  useEffect(() => {
-    fetchSession();
-  }, []);
-
-  const login = (userData, token) => {
-    localStorage.setItem("access_token", token);
-    setUser(userData);
+  const signOut = async () => {
+    try {
+      const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signout`);
+      setUser(null);
+      if (error) throw new Error(error);
+      return { success: true };
+    } catch (error) {
+      const msg = error.response?.data?.error || "Erro ao fazer logout";
+      return { success: false, error: msg };
+    }
   };
 
-  const logout = () => {
-    localStorage.removeItem("access_token");
-    setUser(null);
-  };
-
-  return <AuthContext.Provider value={{ user, login, logout, loading }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, loading, signInWithPassword, signOut }}>{children}</AuthContext.Provider>;
 };
-
-export const useAuth = () => useContext(AuthContext);

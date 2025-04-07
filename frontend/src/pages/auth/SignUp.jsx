@@ -25,27 +25,27 @@ const SignUp = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    
     if (usuario.password !== usuario.confirmPassword) {
       toast.error("As senhas não coincidem");
       return;
     }
-
+    
     try {
-      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`, {
+      const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`, {
         email: usuario.email,
         password: usuario.password,
       });
 
-      navigate("/login");
+      if (error) {throw new Error(error)};
+
       toast.success("Usuário criado com sucesso!");
+      navigate("/login");
+
     } catch (error) {
-      // console.error("Erro completo:", error); // Mostra tudo
-      // console.error("Erro.response:", error.response); // Mostra a resposta da API
-      // console.error("Erro.response.data:", error.response?.data); // Mostra os dados de erro enviados pelo backend
-      const msg = error.response?.data?.error || "Erro ao criar conta";
-      setErroDaApi(msg);
+      const msg = error.response.data.message;
       toast.error(msg);
-      //console.error("Erro na criação:", error);
+      setErroDaApi(msg);
     }
   };
 
@@ -94,6 +94,8 @@ const SignUp = () => {
                 }`}
                 aria-required="true"
                 placeholder="Digite seu email"
+                autoComplete="true"
+                required="true"
                 value={usuario.email}
                 onChange={handleChange}
               />
@@ -117,6 +119,8 @@ const SignUp = () => {
                   erroDaApi ? "border-red-300 ring-red-300" : "border-gray-300 focus:ring-blue-400"
                 }`}
                 aria-required="true"
+                required="true"
+                autoComplete="true"
                 placeholder="Digite sua senha"
                 value={usuario.password}
                 onChange={handleChange}
@@ -140,6 +144,8 @@ const SignUp = () => {
                 type={showPassword ? "text" : "password"}
                 id="confirmPassword"
                 name="confirmPassword"
+                required="true"
+                autoComplete="true"
                 className={`bg-gray-50 w-full px-4 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 ${
                   erroDaApi ? "border-red-300 ring-red-300" : "border-gray-300 focus:ring-blue-400"
                 }`}

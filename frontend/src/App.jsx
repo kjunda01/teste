@@ -1,43 +1,48 @@
+// App.jsx
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "./pages/auth/Login.jsx";
 import SignUp from "./pages/auth/SignUp.jsx";
 import PasswordRecovery from "./pages/auth/PasswordRecovery.jsx";
-
+import AoVivo from "./pages/home/AoVivo.jsx";
+import Contato from "./pages/extras/Contato.jsx";
+import Estatisticas from "./pages/extras/Estatisticas.jsx";
 import Consultar from "./pages/consulta/Consultar.jsx";
 import Proprietarios from "./pages/consulta/Proprietarios.jsx";
 import Veiculos from "./pages/consulta/Veiculos.jsx";
 
-import Contato from "./pages/extras/Contato.jsx";
-import Estatisticas from "./pages/extras/Estatisticas.jsx";
+import ProtectedRoute from "./services/ProtectedRoute.jsx";
 
-import AoVivo from "./pages/home/AoVivo.jsx";
+// Rotas públicas
+const publicRoutes = [
+  { path: "/", element: <Login /> },
+  { path: "/login", element: <Login /> },
+  { path: "/signup", element: <SignUp /> },
+  { path: "/passwordrecovery", element: <PasswordRecovery /> },
+  { path: "/contato", element: <Contato /> },
+];
+
+// Rotas protegidas
+const protectedRoutes = [
+  { path: "/home", element: <AoVivo /> },
+  { path: "/estatisticas", element: <Estatisticas /> },
+  { path: "/consultar", element: <Consultar /> },
+  { path: "/proprietarios", element: <Proprietarios /> },
+  { path: "/veiculos", element: <Veiculos /> },
+];
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* BARRA */}
-        <Route path="/" element={<Login />} />
+        {publicRoutes.map(({ path, element }) => (
+          <Route key={path} path={path} element={element} />
+        ))}
 
-        {/* login */}
-        <Route path="/login" element={<Login />} />
-
-        {/* resetpassword */}
-        <Route path="/passwordrecovery" element={<PasswordRecovery />} />
-
-        {/* signup */}
-        <Route path="/signup" element={<SignUp />} />
-
-        {/* Home */}
-        <Route path="/home" element={<AoVivo />} />
-
-        {/* estatisticas */}
-        <Route path="/estatisticas" element={<Estatisticas />} />
-
-        {/* contato */}
-        <Route path="/contato" element={<Contato />} />
+        {protectedRoutes.map(({ path, element }) => (
+          <Route key={path} path={path} element={<ProtectedRoute>{element}</ProtectedRoute>} />
+        ))}
       </Routes>
     </BrowserRouter>
   );
