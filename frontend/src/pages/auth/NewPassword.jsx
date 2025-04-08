@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -52,13 +52,32 @@ const SignUp = () => {
 
       toast.success("Usuário criado com sucesso!");
       navigate("/login");
-      
     } catch (error) {
       const msg = error.response.data.error;
       toast.error(msg);
       setErroDaApi(msg);
     }
   };
+
+  // Verifica se a sessao está ativa (para recuperação de senha)
+  useEffect(() => {
+    const autenticarSessao = async () => {
+      if (!accessToken) return;
+
+      try {
+        const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/setsession`, {
+          access_token: accessToken,
+        });
+
+        console.log("Sessão autenticada com sucesso!", data);
+      } catch (error) {
+        console.error("Erro ao autenticar sessão:", error.response?.data || error.message);
+        toast.error("Erro ao autenticar sessão.");
+      }
+    };
+
+    autenticarSessao();
+  }, [accessToken]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white md:bg-gray-200">
