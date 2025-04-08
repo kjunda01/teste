@@ -17,9 +17,9 @@ const router = express.Router();
 router.post("/signup", signUpController);
 router.post("/signinwithpassword", signInWithPasswordController);
 router.post("/resetpasswordforemail", resetPasswordForEmailController);
+router.post("/updateuserpassword", updateUserPasswordController);
+router.post("/signout", signOutController);
 
 // Rotas protegidas (exigem autenticação)
-router.post("/updateuserpassword", authMiddleware, updateUserPasswordController);
-router.post("/signout", signOutController);
 
 export default router;
