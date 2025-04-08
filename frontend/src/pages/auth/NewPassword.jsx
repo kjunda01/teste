@@ -1,50 +1,64 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
+
 import { supabase } from "../../config/supabaseClient.js";
 
-import PessoaSVG from "../../assets/svgs/PessoaSVG";
+import LoadingCircle from "../../components/LoadingCircle";
 import OlhoFechadoSVG from "../../assets/svgs/OlhoFechadoSVG";
 import OlhoAbertoSVG from "../../assets/svgs/OlhoAbertoSVG";
 
 const NewPassword = () => {
   const [searchParams] = useSearchParams();
-  const accessToken = searchParams.get("access_token");
-
   const [usuario, setUsuario] = useState({ password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [erroDaApi, setErroDaApi] = useState("");
   const navigate = useNavigate();
 
-  const showPasswordIcon = () => {
-    showPassword ? setShowPassword(false) : setShowPassword(true);
-  };
+  const accessToken = searchParams.get("access_token");
+
+  useEffect(() => {
+    if (accessToken) {
+      supabase.auth
+        .setSession({
+          access_token: accessToken,
+          refresh_token: "",
+        })
+        .then(({ error }) => {
+          if (error) {
+            console.error("Erro ao definir sessão:", error.message);
+            toast.error("Erro ao autenticar sessão");
+          }
+        });
+    }
+  }, [accessToken]);
+
+  const showPasswordIcon = () => setShowPassword((prev) => !prev);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setUsuario((prevUsuario) => ({ ...prevUsuario, [name]: value }));
+    setUsuario((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const accessToken = new URLSearchParams(window.location.search).get("access_token");
+    if (!accessToken) {
+      toast.error("Token de acesso não encontrado.");
+      return;
+    }
 
     if (usuario.password !== usuario.confirmPassword) {
       toast.error("As senhas não coincidem");
       return;
     }
 
+    setIsLoading(true);
+
     try {
-      const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/setsession`, {
-        token: accessToken,
-      });
-      setIsLoading(true);
-
-      if (error) throw error;
-
+      // Atualiza a senha usando a sessão do Supabase já configurada
       await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/updateuserpassword`,
         { password: usuario.password },
@@ -62,19 +76,6 @@ const NewPassword = () => {
       setIsLoading(false);
     }
   };
-
-  // useEffect(() => {
-  //   const hashParams = new URLSearchParams(window.location.hash.replace("#", "?"));
-  //   const access_token = hashParams.get("access_token");
-  //   const type = hashParams.get("type");
-
-  //   if (access_token && type === "recovery") {
-  //     supabase.auth.setSession({
-  //       access_token,
-  //       refresh_token: "",
-  //     });
-  //   }
-  // }, []);
 
   const handleLoadingComplete = () => {
     navigate("/home");
