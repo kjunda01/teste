@@ -49,8 +49,10 @@ export const signInWithPasswordService = async (email, password) => {
 
 // Função para resetPasswordForEmail
 export const resetPasswordForEmailService = async (email) => {
-  const { data, error } = await supabase.auth.resetPasswordForEmail(email);
-
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: "http://192.168.1.190:5173/newpassword", // ou localhost:5173, conforme onde estiver testando
+  });
+  
   if (error) throw error;
 
   return data;

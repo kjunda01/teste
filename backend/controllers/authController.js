@@ -160,3 +160,7 @@ export const setSessionController = async (req, res) => {
     return res.status(400).json({ error: error.message || "Erro ao redefinir senha." });
   }
 };
+
+export const onAuthStateChangeController = async (req, res) => {
+
+}
