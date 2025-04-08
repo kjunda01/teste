@@ -176,7 +176,7 @@ const SignUp = () => {
           {/* Esqueci a Senha */}
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              <Link to="/recuperar" className="text-sky-500 hover:text-blue-950">
+              <Link to="/passwordrecovery" className="text-sky-500 hover:text-blue-950">
                 Esqueceu sua senha?
               </Link>
             </p>

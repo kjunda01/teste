@@ -1,18 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import axios from "axios";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import PessoaSVG from "../../assets/svgs/PessoaSVG";
 import OlhoFechadoSVG from "../../assets/svgs/OlhoFechadoSVG";
 import OlhoAbertoSVG from "../../assets/svgs/OlhoAbertoSVG";
-import { AuthContext } from "../../contexts/AuthContext";
 
-const Login = () => {
-  const [usuario, setUsuario] = useState({ email: "", password: "" });
+const SignUp = () => {
+  const [searchParams] = useSearchParams();
+  const accessToken = searchParams.get("access_token");
+
+  const [usuario, setUsuario] = useState({ password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [erroDaApi, setErroDaApi] = useState("");
   const navigate = useNavigate();
-  const { signInWithPassword } = useContext(AuthContext);
 
   const showPasswordIcon = () => {
     showPassword ? setShowPassword(false) : setShowPassword(true);
@@ -26,45 +28,37 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    try {
-      const { success, user, error } = await signInWithPassword(usuario.email, usuario.password);
+    if (usuario.password !== usuario.confirmPassword) {
+      toast.error("As senhas não coincidem");
+      return;
+    }
 
-      if (success) {
-        toast.success("Bem vindo(a), " + user.data.email);
-        navigate("/home");
-      } else {
-        toast.error(error);
+    try {
+      const { data, error } = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/updateuserpassword`,
+        {
+          password: usuario.password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (error) {
         throw new Error(error);
       }
+
+      toast.success("Usuário criado com sucesso!");
+      navigate("/login");
+      
     } catch (error) {
-      // console.error("Erro completo:", error); // Mostra tudo
-      // console.error("Erro.response:", error.response); // Mostra a resposta da API
-      // console.error("Erro.response.data:", error.response?.data); // Mostra os dados de erro enviados pelo backend
-      //const msg = error.response?.data?.error || "Erro ao fazer login conta";
-      //setErroDaApi(msg);
-      //toast.error(msg);
-      toast.error(error);
-      setErroDaApi(error);
+      const msg = error.response.data.error;
+      toast.error(msg);
+      setErroDaApi(msg);
     }
   };
-
-  // Para conseguir redirecionar do email de recuperação de senha para uma nova pagina
-  useEffect(() => {
-    const hash = window.location.hash;
-    if (hash) {
-      const params = new URLSearchParams(hash.slice(1)); // remove o `#`
-      const accessToken = params.get("access_token");
-      const type = params.get("type"); // pode ser `recovery` ou `signup`
-
-      if (accessToken && type === "recovery") {
-        // Limpa o hash da URL
-        window.history.replaceState(null, null, window.location.pathname);
-        // Redireciona para a página de redefinição de senha
-        navigate(`/newpassword?access_token=${accessToken}`);
-      }
-    }
-  }, []);
-
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white md:bg-gray-200">
@@ -84,47 +78,14 @@ const Login = () => {
             <span className="text-blue-950 font-bold">PARK</span>
           </h1>
         </div>
-        <h2 className="text-xl font-medium text-center mb-6">Login</h2>
-
-        {/* Texto de inscrição */}
-        <p className="text-center text-gray-600 mb-4">
-          Não possui uma conta? <span></span>
-          <Link to="/signup" className="text-blue-500 hover:text-blue-950 text-xs">
-            Crie uma agora mesmo!
-          </Link>
-        </p>
+        <h2 className="text-xl font-medium text-center mb-6">Redefinição de senha</h2>
 
         {/* Formulário */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Campo de Email */}
-          <fieldset className="Input">
-            <label htmlFor="email" className="font-bold">
-              Email
-            </label>
-            <div className="flex flex-row">
-              <input
-                type="text"
-                id="email"
-                name="email"
-                className={`bg-gray-50 w-full px-4 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 ${
-                  erroDaApi ? "border-red-300 ring-red-300" : "border-gray-300 focus:ring-blue-400"
-                }`}
-                aria-required="true"
-                placeholder="Digite seu email"
-                autoComplete="true"
-                value={usuario.email}
-                onChange={handleChange}
-              />
-              <div className="flex items-center justify-center bg-gray-200 ml-2 p-2 rounded cursor-default">
-                <PessoaSVG />
-              </div>
-            </div>
-          </fieldset>
-
           {/* Campo de Senha */}
           <fieldset className="Input">
             <label htmlFor="password" className="font-bold">
-              Senha
+              Nova Senha
             </label>
             <div className="flex flex-row">
               <input
@@ -149,23 +110,42 @@ const Login = () => {
             </div>
           </fieldset>
 
+          {/* Campo de confirmar Senha */}
+          <fieldset className="Input">
+            <label htmlFor="confirmPassword" className="font-bold">
+              Confirmar Nova Senha
+            </label>
+            <div className="flex flex-row">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="confirmPassword"
+                name="confirmPassword"
+                autoComplete="true"
+                className={`bg-gray-50 w-full px-4 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 ${
+                  erroDaApi ? "border-red-300 ring-red-300" : "border-gray-300 focus:ring-blue-400"
+                }`}
+                aria-required="true"
+                placeholder="Digite a confirmação da senha"
+                value={usuario.confirmPassword}
+                onChange={handleChange}
+              />
+              <div
+                className=" flex items-center justify-center bg-gray-200 ml-2 p-2 rounded cursor-pointer"
+                onClick={showPasswordIcon}
+              >
+                {showPassword ? <OlhoAbertoSVG /> : <OlhoFechadoSVG />}
+              </div>
+            </div>
+          </fieldset>
+
           {/* Botão de Submissão */}
           <div>
             <button
               type="submit"
               className="w-full py-2 bg-sky-500 text-white font-semibold rounded-md hover:bg-blue-950 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
             >
-              Entrar
+              Alterar senha
             </button>
-          </div>
-
-          {/* Esqueci a Senha */}
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              <Link to="/passwordrecovery" className="text-sky-500 hover:text-blue-950">
-                Esqueceu sua senha?
-              </Link>
-            </p>
           </div>
         </form>
 
@@ -183,4 +163,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignUp;

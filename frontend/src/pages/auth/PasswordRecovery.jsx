@@ -1,25 +1,34 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import PessoaSVG from "../../assets/svgs/PessoaSVG";
 
+import axios from "axios";
+
 const PasswordRecovery = () => {
-  const API_URL = import.meta.env.VITE_BACKEND_URL;
   const [email, setEmail] = useState("");
+
+  const [erroDaApi, setErroDaApi] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     const emailAtual = event.target.value;
-    setEmail((prevEmail) => ({ ...prevEmail, emailAtual }));
-    console.log(emailAtual);
+    setEmail(emailAtual);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     try {
-      const response = await axios.post(`${API_URL}/api/auth/resetpasswordforemail`, email);
-      console.log("Resposta do servidor:", response.data);
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/resetpasswordforemail`, { email });
+
+      toast.success("Siga as instruções no seu e-mail");
+      navigate("/home");
     } catch (error) {
-      console.error("Erro ao criar conta:", error.response?.data || error.message);
+      const msg = error.response?.data?.error || "Erro inesperado.";
+      toast.error(msg);
+      setErroDaApi(msg);
     }
   };
 
@@ -41,41 +50,38 @@ const PasswordRecovery = () => {
             <span className="text-blue-950 font-bold">PARK</span>
           </h1>
         </div>
-        <h2 className="text-xl font-medium text-center mb-6">Novo usuário</h2>
+        <h2 className="text-xl font-medium text-center mb-6">Recuperar conta</h2>
 
         {/* Texto de inscrição */}
         <p className="text-center text-gray-600 mb-4">
-          Já possui uma conta? <span></span>
-          <Link to="/login" className="text-blue-500 hover:text-blue-950 text-xs">
-            Faça login agora!
+          Não possui uma conta? <span></span>
+          <Link to="/signup" className="text-blue-500 hover:text-blue-950 text-xs">
+            Crie uma agora mesmo!
           </Link>
         </p>
 
-        <p className="text-center">Informe seu e-mail para recuperação:</p>
-
         {/* Formulário */}
-        <form action="" className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Campo de Email */}
           <fieldset className="Input">
             <label htmlFor="email" className="font-bold">
               Email
             </label>
-            <div className="relative">
+            <div className="flex flex-row">
               <input
-                type="text"
+                type="email"
                 id="email"
                 name="email"
-                maxLength="32"
-                autoFocus
-                autoComplete="off"
-                className="bg-gray-50 w-full px-4 py-2 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                required
+                className={`bg-gray-50 w-full px-4 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 ${
+                  erroDaApi ? "border-red-300 ring-red-300" : "border-gray-300 focus:ring-blue-400"
+                }`}
                 aria-required="true"
                 placeholder="Digite seu email"
-                value={1}
+                autoComplete="true"
+                value={email}
                 onChange={handleChange}
               />
-              <div className="absolute right-0 top-0 bottom-0 my-auto flex items-center justify-center bg-gray-200 px-2 py-2 rounded-r-md">
+              <div className="flex items-center justify-center bg-gray-200 ml-2 p-2 rounded cursor-default">
                 <PessoaSVG />
               </div>
             </div>
@@ -86,7 +92,6 @@ const PasswordRecovery = () => {
             <button
               type="submit"
               className="w-full py-2 bg-sky-500 text-white font-semibold rounded-md hover:bg-blue-950 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
-              onClick={handleSubmit}
             >
               Enviar email de recuperação
             </button>

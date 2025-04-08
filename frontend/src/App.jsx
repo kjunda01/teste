@@ -13,6 +13,7 @@ import Proprietarios from "./pages/consulta/Proprietarios.jsx";
 import Veiculos from "./pages/consulta/Veiculos.jsx";
 
 import ProtectedRoute from "./services/ProtectedRoute.jsx";
+import NewPassword from "./pages/auth/NewPassword.jsx";
 
 // Rotas públicas
 const publicRoutes = [
@@ -21,6 +22,7 @@ const publicRoutes = [
   { path: "/signup", element: <SignUp /> },
   { path: "/passwordrecovery", element: <PasswordRecovery /> },
   { path: "/contato", element: <Contato /> },
+  { path: "/newpassword", element: <NewPassword /> },
 ];
 
 // Rotas protegidas
