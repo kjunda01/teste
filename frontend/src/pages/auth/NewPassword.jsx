@@ -10,6 +10,7 @@ const NewPassword = () => {
   const [usuario, setUsuario] = useState({ password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [accessToken, setAccessToken] = useState("");
+  const [erroDaApi, setErroDaApi] = useState("");
 
   useEffect(() => {
     const fragment = new URLSearchParams(window.location.hash.slice(1));
