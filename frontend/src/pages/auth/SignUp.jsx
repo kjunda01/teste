@@ -37,7 +37,7 @@ const SignUp = () => {
         email: usuario.email,
         password: usuario.password,
       });
-      console.log(data)
+      
       if (error) throw error;
 
       
