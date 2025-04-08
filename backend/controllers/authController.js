@@ -5,7 +5,7 @@ import {
   getUserByEmailService,
   signOutService,
   updateUserPasswordService,
-  setSessionService
+  setSessionService,
 } from "../services/authService.js";
 
 // Método para realizar signUp
@@ -116,23 +116,18 @@ export const updateUserController = async (req, res) => {
 
 // Método para realizar updateUser
 export const updateUserPasswordController = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
   const { password } = req.body;
 
-  // Validação básica dos dados
-  if (!password) {
-    return res.status(400).json({ error: "Senha obrigatória." });
+  if (!token || !password) {
+    return res.status(400).json({ error: "Token ou senha ausente" });
   }
 
-  try {
-    // Chama o serviço para realizar o login
-    const data = await updateUserPasswordService(password);
+  const { data, error } = await supabase.auth.updateUser({ password }, { headers: { Authorization: `Bearer ${token}` } });
 
-    // Retorna os dados do usuário autenticado
-    res.status(200).json({ message: "Atualização da senha do usuário bem-sucedida!" });
-  } catch (error) {
-    // Trata erros e retorna uma resposta adequada
-    res.status(400).json({ error: error.message });
-  }
+  if (error) return res.status(400).json({ error: error.message });
+
+  res.status(200).json({ message: "Senha redefinida com sucesso!" });
 };
 
 // Método para realizar signOut
@@ -148,7 +143,6 @@ export const signOutController = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
 
 // Método para realizar setSession
 export const setSessionController = async (req, res) => {
