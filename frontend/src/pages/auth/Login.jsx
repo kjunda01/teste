@@ -29,14 +29,14 @@ const Login = () => {
     event.preventDefault();
 
     try {
-      const { success, user, error } = await signInWithPassword(usuario.email, usuario.password);
       setIsLoading(true);
+      const { success, user, error } = await signInWithPassword(usuario.email, usuario.password);
       if (error) throw error;
 
       if (success) {
         setTimeout(() => {
           toast.success("Bem vindo(a), " + user.data.email);
-        }, 1500);
+        }, 500);
       }
     } catch (error) {
       toast.error(error);

@@ -33,17 +33,17 @@ const SignUp = () => {
     }
 
     try {
+      setIsLoading(true);
       const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`, {
         email: usuario.email,
         password: usuario.password,
       });
-      setIsLoading(true);
 
       if (error) throw error;
 
       setTimeout(() => {
         toast.success("Usuário criado com sucesso!");
-      }, 1500);
+      }, 500);
     } catch (error) {
       const msg = error.response.data.message;
       toast.error(msg);
