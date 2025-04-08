@@ -1,6 +1,20 @@
 const logger = (req, res, next) => {
-  const timestamp = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
-  console.log(`[${timestamp}] ${req.method} ${req.url}`);
+  const timestamp = new Date().toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo"
+  });
+
+  const method = req.method;
+  const url = req.originalUrl || req.url;
+  const ip = req.ip || req.connection.remoteAddress;
+
+  // Aguarda o envio da resposta para capturar o status
+  res.on('finish', () => {
+    const status = res.statusCode;
+    console.log(
+      `[${timestamp}] | ${ip} | ${method} | ${url} | ${status}`
+    );
+  });
+
   next();
 };
 

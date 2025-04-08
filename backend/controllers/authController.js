@@ -14,7 +14,7 @@ export const signUpController = async (req, res) => {
 
   // Validação básica dos dados
   if (!email || !password) {
-    return res.status(400).json({ error: "Email e senha são obrigatórios" });
+    return res.status(400).json({ message: "Email e senha são obrigatórios" });
   }
 
   // Verifica se o usuário já existe
@@ -47,12 +47,12 @@ export const signInWithPasswordController = async (req, res) => {
 
   // Validação básica dos dados
   if (!email || !password) {
-    return res.status(400).json({ error: "Email e senha são obrigatórios" });
+    return res.status(400).json({ message: "Email e senha são obrigatórios" });
   }
 
   // se o usuário nao existir ele retorna erro
   if (!(await getUserByEmailService(email))) {
-    return res.status(400).json({ error: "E-mail não existe na base de dados!" });
+    return res.status(400).json({ message: "E-mail não existe na base de dados!" });
   }
 
   try {
@@ -73,12 +73,12 @@ export const resetPasswordForEmailController = async (req, res) => {
 
   // // Validação básica dos dados
   if (!email) {
-    return res.status(400).json({ error: "Email obrigatório." });
+    return res.status(400).json({ message: "Email obrigatório." });
   }
 
   // se o usuário nao existir ele retorna erro
   if (!(await getUserByEmailService(email))) {
-    return res.status(400).json({ error: "E-mail não existe na base de dados!" });
+    return res.status(400).json({ message: "E-mail não existe na base de dados!" });
   }
 
   try {
@@ -99,7 +99,7 @@ export const updateUserController = async (req, res) => {
 
   // Validação básica dos dados
   if (!email || !password) {
-    return res.status(400).json({ error: "Email e senha são obrigatórios" });
+    return res.status(400).json({ message: "Email e senha são obrigatórios" });
   }
 
   try {
@@ -121,7 +121,7 @@ export const updateUserPasswordController = async (req, res) => {
     const { password } = req.body;
 
     if (!token || !password) {
-      return res.status(400).json({ error: "Token ou senha ausente" });
+      return res.status(400).json({ message: "Token ou senha ausente" });
     }
 
     await updateUserPasswordService(token, password);
@@ -150,7 +150,7 @@ export const setSessionController = async (req, res) => {
   const { access_token } = req.body;
 
   if (!access_token) {
-    return res.status(400).json({ error: "access_token ausente" });
+    return res.status(400).json({ message: "access_token ausente" });
   }
 
   try {
