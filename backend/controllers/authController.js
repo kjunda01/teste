@@ -147,18 +147,16 @@ export const signOutController = async (req, res) => {
 
 // Método para realizar setSession
 export const setSessionController = async (req, res) => {
+  const { password, access_token } = req.body;
+
+  if (!password || !access_token) {
+    return res.status(400).json({ message: "Dados incompletos." });
+  }
+
   try {
-    const { token } = req.body;
-
-    if (!token) {
-      return res.status(400).json({ message: "Token não fornecido" });
-    }
-
-    const user = await setSessionService(token);
-
-    return res.status(200).json({ message: "Sessão autenticada!", user });
+    await redefinePasswordService(password, access_token);
+    return res.status(200).json({ message: "Senha redefinida com sucesso!" });
   } catch (error) {
-    console.error("Erro ao definir sessão:", error.message);
-    return res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message || "Erro ao redefinir senha." });
   }
 };

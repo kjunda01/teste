@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { supabase } from "../../config/supabaseClient.js";
-
+import axios from "axios";
 import OlhoFechadoSVG from "../../assets/svgs/OlhoFechadoSVG";
 import OlhoAbertoSVG from "../../assets/svgs/OlhoAbertoSVG";
 
@@ -10,56 +9,48 @@ const NewPassword = () => {
   const navigate = useNavigate();
   const [usuario, setUsuario] = useState({ password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [erroDaApi, setErroDaApi] = useState("");
+  const [accessToken, setAccessToken] = useState("");
 
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "PASSWORD_RECOVERY") {
-        toast.info("Token validado. Agora você pode redefinir sua senha.");
-      }
-    });
+    const fragment = new URLSearchParams(window.location.hash.slice(1));
+    const token = fragment.get("access_token");
+    const type = fragment.get("type");
 
-    return () => {
-      authListener?.subscription?.unsubscribe();
-    };
+    if (token && type === "recovery") {
+      setAccessToken(token);
+      toast.info("Token validado. Redefina sua senha.");
+    } else {
+      toast.error("Link inválido ou expirado.");
+    }
   }, []);
 
   const showPasswordIcon = () => {
     setShowPassword((prev) => !prev);
   };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setUsuario((prevUsuario) => ({ ...prevUsuario, [name]: value }));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUsuario((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     if (usuario.password !== usuario.confirmPassword) {
       toast.error("As senhas não coincidem.");
       return;
     }
 
-    if (usuario.password.length < 6) {
-      toast.error("A senha deve ter pelo menos 6 caracteres.");
-      return;
-    }
-
     try {
-      const { data, error } = await supabase.auth.updateUser({
+      const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/auth/newpassword`, {
         password: usuario.password,
+        access_token: accessToken,
       });
 
-      if (error) {
-        setErroDaApi(error.message);
-        toast.error("Erro ao atualizar a senha.");
-      } else {
-        toast.success("Senha redefinida com sucesso!");
-        navigate("/login");
-      }
-    } catch (error) {
-      toast.error("Erro inesperado ao redefinir senha.");
+      toast.success(data.message);
+      navigate("/login");
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Erro ao redefinir senha.");
     }
   };
 

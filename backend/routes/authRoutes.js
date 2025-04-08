@@ -21,8 +21,8 @@ router.post("/resetpasswordforemail", resetPasswordForEmailController);
 router.post("/signout", signOutController);
 router.post("/setsession", setSessionController);
 
-
 // Rotas protegidas (exigem autenticação)
 router.post("/updateuserpassword", authMiddleware, updateUserPasswordController);
+
 
 export default router;
