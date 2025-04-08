@@ -4,6 +4,7 @@ import {
   resetPasswordForEmailService,
   getUserByEmailService,
   signOutService,
+  updateUserPasswordService
 } from "../services/authService.js";
 
 // Método para realizar signUp

@@ -64,9 +64,9 @@ export const updateUserService = async (email, password) => {
   return data;
 };
 
-// Função para updateUser
-export const updateUserPasswordService = async (email, password) => {
-  const { data, error } = await supabase.auth.updateUser({password: password})
+// Função para updateUserPassword
+export const updateUserPasswordService = async (password) => {
+  const { data, error } = await supabase.auth.updateUser(password)
   
   if (error) throw error;
   return data;
