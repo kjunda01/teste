@@ -37,15 +37,13 @@ const SignUp = () => {
         email: usuario.email,
         password: usuario.password,
       });
-      
+      setIsLoading(true);
+
       if (error) throw error;
 
-      
-        setIsLoading(true);
-        setTimeout(() => {
-          toast.success("Usuário criado com sucesso!");
-        }, 1500);
-      
+      setTimeout(() => {
+        toast.success("Usuário criado com sucesso!");
+      }, 1500);
     } catch (error) {
       const msg = error.response.data.message;
       toast.error(msg);

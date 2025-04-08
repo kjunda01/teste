@@ -49,7 +49,9 @@ export const signInWithPasswordService = async (email, password) => {
 
 // Função para resetPasswordForEmail
 export const resetPasswordForEmailService = async (email) => {
-  const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.FRONTEND_URL}/newpassword`,
+  });
 
   if (error) throw error;
 
@@ -64,13 +66,25 @@ export const updateUserService = async (email, password) => {
 };
 
 // Função para updateUserPassword
-export const updateUserPasswordService = async (userId, newPassword) => {
-  const { data, error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
-    password: newPassword,
+export const updateUserPasswordService = async (accessToken, newPassword) => {
+  // Define a sessão do usuário no Supabase com o token recebido
+  const { error: sessionError } = await supabase.auth.setSession({
+    access_token: accessToken,
+    refresh_token: "",
   });
 
-  if (error) throw error;
-  return data;
+  if (sessionError) {
+    throw new Error("Erro ao definir a sessão: " + sessionError.message);
+  }
+
+  // Atualiza a senha do usuário logado
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+  if (error) {
+    throw new Error("Erro ao atualizar a senha: " + error.message);
+  }
+
+  return true;
 };
 
 // Função para signOut

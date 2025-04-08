@@ -117,19 +117,20 @@ export const updateUserController = async (req, res) => {
 // Método para realizar updateUser
 export const updateUserPasswordController = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
     const { password } = req.body;
+    const user = req.user;
 
-    if (!token || !password) {
-      return res.status(400).json({ message: "Token ou senha ausente" });
+    if (!password) {
+      return res.status(400).json({ message: "Senha ausente." });
     }
 
-    await updateUserPasswordService(token, password);
+    await updateUserPasswordService(password);
     res.status(200).json({ message: "Senha redefinida com sucesso!" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
+
 
 // Método para realizar signOut
 export const signOutController = async (req, res) => {
@@ -150,7 +151,7 @@ export const setSessionController = async (req, res) => {
   const { access_token } = req.body;
 
   if (!access_token) {
-    return res.status(400).json({ message: "access_token ausente" });
+    return res.status(400).json({ error: "access_token ausente" });
   }
 
   try {

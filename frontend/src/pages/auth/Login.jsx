@@ -30,10 +30,10 @@ const Login = () => {
 
     try {
       const { success, user, error } = await signInWithPassword(usuario.email, usuario.password);
+      setIsLoading(true);
       if (error) throw error;
 
       if (success) {
-        setIsLoading(true);
         setTimeout(() => {
           toast.success("Bem vindo(a), " + user.data.email);
         }, 1500);

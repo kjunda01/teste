@@ -41,10 +41,10 @@ const NewPassword = () => {
         { password: usuario.password },
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
+      setIsLoading(true);
 
       if (error) throw error;
 
-      setIsLoading(true);
       setTimeout(() => {
         toast.success("Senha redefinida com sucesso!");
       }, 1500);
