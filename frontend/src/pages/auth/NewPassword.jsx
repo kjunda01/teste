@@ -7,7 +7,7 @@ import PessoaSVG from "../../assets/svgs/PessoaSVG";
 import OlhoFechadoSVG from "../../assets/svgs/OlhoFechadoSVG";
 import OlhoAbertoSVG from "../../assets/svgs/OlhoAbertoSVG";
 
-const SignUp = () => {
+const NewPassword = () => {
   const [searchParams] = useSearchParams();
   const accessToken = searchParams.get("access_token");
 
@@ -50,7 +50,7 @@ const SignUp = () => {
         throw new Error(error);
       }
 
-      toast.success("Usuário criado com sucesso!");
+      toast.success("Senha redefinida com sucesso!");
       navigate("/login");
     } catch (error) {
       const msg = error.response.data.error;
@@ -58,26 +58,6 @@ const SignUp = () => {
       setErroDaApi(msg);
     }
   };
-
-  // Verifica se a sessao está ativa (para recuperação de senha)
-  useEffect(() => {
-    const autenticarSessao = async () => {
-      if (!accessToken) return;
-
-      try {
-        const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/setsession`, {
-          access_token: accessToken,
-        });
-
-        console.log("Sessão autenticada com sucesso!", data);
-      } catch (error) {
-        console.error("Erro ao autenticar sessão:", error.response?.data || error.message);
-        toast.error("Erro ao autenticar sessão.");
-      }
-    };
-
-    autenticarSessao();
-  }, [accessToken]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white md:bg-gray-200">
@@ -182,4 +162,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default NewPassword;
