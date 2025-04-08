@@ -30,43 +30,51 @@ const NewPassword = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const accessToken = new URLSearchParams(window.location.search).get("access_token");
+
     if (usuario.password !== usuario.confirmPassword) {
       toast.error("As senhas não coincidem");
       return;
     }
 
     try {
-      const { data, error } = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/auth/updateuserpassword`,
-        { password: usuario.password },
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
+      const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/setsession`, {
+        token: accessToken,
+      });
       setIsLoading(true);
 
       if (error) throw error;
 
-      setTimeout(() => {
-        toast.success("Senha redefinida com sucesso!");
-      }, 1500);
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/updateuserpassword`,
+        { password: usuario.password },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      toast.success("Senha redefinida com sucesso!");
     } catch (error) {
-      const msg = error.response.data.message;
-      toast.error(msg);
-      setErroDaApi(msg);
+      toast.error("Erro ao redefinir senha.");
+      setErroDaApi(error.response?.data?.error || "Erro inesperado");
+      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    const hashParams = new URLSearchParams(window.location.hash.replace("#", "?"));
-    const access_token = hashParams.get("access_token");
-    const type = hashParams.get("type");
+  // useEffect(() => {
+  //   const hashParams = new URLSearchParams(window.location.hash.replace("#", "?"));
+  //   const access_token = hashParams.get("access_token");
+  //   const type = hashParams.get("type");
 
-    if (access_token && type === "recovery") {
-      supabase.auth.setSession({
-        access_token,
-        refresh_token: "",
-      });
-    }
-  }, []);
+  //   if (access_token && type === "recovery") {
+  //     supabase.auth.setSession({
+  //       access_token,
+  //       refresh_token: "",
+  //     });
+  //   }
+  // }, []);
 
   const handleLoadingComplete = () => {
     navigate("/home");

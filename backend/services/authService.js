@@ -93,8 +93,15 @@ export const signOutService = async () => {
 };
 
 // Função para setSession
-export const setSessionService = async (access_token, refresh_token) => {
-  const { data, error } = await supabase.auth.getUser(access_token);
-  if (error) throw error;
-  return data.user;
+export const setSessionService = async (token) => {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser(token);
+
+  if (error || !user) {
+    throw new Error("Token inválido ou sessão expirada");
+  }
+
+  return user;
 };

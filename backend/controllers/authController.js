@@ -131,7 +131,6 @@ export const updateUserPasswordController = async (req, res) => {
   }
 };
 
-
 // Método para realizar signOut
 export const signOutController = async (req, res) => {
   try {
@@ -148,16 +147,18 @@ export const signOutController = async (req, res) => {
 
 // Método para realizar setSession
 export const setSessionController = async (req, res) => {
-  const { access_token } = req.body;
-
-  if (!access_token) {
-    return res.status(400).json({ error: "access_token ausente" });
-  }
-
   try {
-    const user = await setSessionService(access_token);
-    res.status(200).json({ message: "Sessão autenticada!", user });
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ message: "Token não fornecido" });
+    }
+
+    const user = await setSessionService(token);
+
+    return res.status(200).json({ message: "Sessão autenticada!", user });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("Erro ao definir sessão:", error.message);
+    return res.status(400).json({ error: error.message });
   }
 };
