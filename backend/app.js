@@ -11,7 +11,7 @@ app.use(express.json());
 
 
 // ✅ Loga todas as requisições
-app.use(logger);
+//app.use(logger);
 
 // ✅ Captura erros em toda a aplicação
 // app.use(errorHandler); 
@@ -19,10 +19,14 @@ app.use(logger);
 // Rotas de autenticação
 app.use("/api/auth", authRoutes);
 
-// Redireciona qualquer acesso para a url do front
-app.get("*", (req, res) => {
-  const redirectUrl = `${process.env.FRONTEND_URL}${req.originalUrl}`;
-  res.redirect(redirectUrl);
+app.use((req, res, next) => {
+  if (req.originalUrl.startsWith("/api")) {
+    // Se é uma rota de API que não existe
+    return res.status(404).json({ error: "Rota não encontrada" });
+  }
+  // Senão, só responde com um aviso ou status
+  res.status(400).send("Acesse pelo frontend");
 });
+
 
 export default app;

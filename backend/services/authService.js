@@ -4,12 +4,13 @@ import supabaseAdmin from "../config/supabaseServiceRoleClient.js";
 // Função para verificar se usuario existe
 export const getUserByEmailService = async (email) => {
   const { data, error } = await supabaseAdmin.auth.admin.listUsers();
-
+  
   if (error) throw error;
-
+  
   const user = data.users.find((user) => user.email === email);
 
-  return user || null;
+  return user ? true : false;
+
 };
 
 // Função para signUp
@@ -20,7 +21,7 @@ export const signUpService = async (email, password) => {
   //   throw new Error("Conta ainda não confirmada. Verifique seu e-mail.");
   // }
 
-  if (error) throw new Error(error.message);
+  if (error) throw error;
 
   return {
     id: data.user?.id,
@@ -37,7 +38,7 @@ export const signInWithPasswordService = async (email, password) => {
   //   throw new Error("Conta ainda não confirmada. Verifique seu e-mail.");
   // }
 
-  if (error) throw new Error(error.message);
+  if (error) throw error;
 
   return {
     id: data.user?.id,
@@ -47,10 +48,12 @@ export const signInWithPasswordService = async (email, password) => {
   };
 };
 
-// Função para signInWithPassword
+// Função para resetPasswordForEmail
 export const resetPasswordForEmailService = async (email) => {
   const { data, error } = await supabase.auth.resetPasswordForEmail(email);
-  if (error) throw new Error(error.message);
+
+  if (error) throw error;
+
   return data;
 };
 
@@ -61,23 +64,17 @@ export const updateUserService = async (email, password) => {
   return data;
 };
 
-// Função para getSession
-export const getSessionService = async () => {
-  const { data, error } = await supabase.auth.getSession();
-  if (error) throw new Error(error.message);
+// Função para updateUser
+export const updateUserPasswordService = async (email, password) => {
+  const { data, error } = await supabase.auth.updateUser({password: password})
+  
+  if (error) throw error;
   return data;
 };
 
 // Função para signOut
 export const signOutService = async () => {
   const { data, error } = await supabase.auth.signOut();
-  if (error) throw new Error(error.message);
-  return data;
-};
-
-// Função para onAuthStateChange
-export const onAuthStateChangeService = async (event, session) => {
-  const { data, error } = await supabase.auth.onAuthStateChange(event, session);
-  if (error) throw new Error(error.message);
+  if (error) throw error;
   return data;
 };

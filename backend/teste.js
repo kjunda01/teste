@@ -1,23 +1,17 @@
-import { getUserByEmailService } from "./services/authService.js";
-import express from "express";
-
-const router = express.Router();
+import supabase from "./config/supabaseClient.js";
 
 
-const signOutController = async (req, res) => {
-    try {
-        console.log(req)
-        const data = await signOutService();
-        res.status(200).json({ message: "Usuário deslogado!", data });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-const signOutService = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw new Error(error.message);
-    return data;
+// Função para resetPasswordForEmail
+export const resetPasswordForEmailService = async (email) => {
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+
+  if (error) throw new Error(error);
+
+  return data;
 };
 
-signOutController();
-router.post("/signout", signOutController);
+
+// const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/resetpasswordforemail`, email);
+
+let { data, error } = await supabase.auth.resetPasswordForEmail("sinvaljuniorlms@gmail.com")
+console.log(data)
