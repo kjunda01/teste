@@ -64,11 +64,10 @@ export const updateUserService = async (email, password) => {
 };
 
 // Função para updateUserPassword
-export const updateUserPasswordService = async (password) => {
-  const { data, error } = await supabase.auth.updateUser(password);
+export const updateUserPasswordService = async (token, password) => {
+  const { error } = await supabase.auth.updateUser({ password }, { headers: { Authorization: `Bearer ${token}` } });
 
-  if (error) throw error;
-  return data;
+  if (error) throw new Error(error.message);
 };
 
 // Função para signOut

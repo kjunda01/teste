@@ -116,18 +116,19 @@ export const updateUserController = async (req, res) => {
 
 // Método para realizar updateUser
 export const updateUserPasswordController = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  const { password } = req.body;
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    const { password } = req.body;
 
-  if (!token || !password) {
-    return res.status(400).json({ error: "Token ou senha ausente" });
+    if (!token || !password) {
+      return res.status(400).json({ error: "Token ou senha ausente" });
+    }
+
+    await updateUserPasswordService(token, password);
+    res.status(200).json({ message: "Senha redefinida com sucesso!" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-
-  const { data, error } = await supabase.auth.updateUser({ password }, { headers: { Authorization: `Bearer ${token}` } });
-
-  if (error) return res.status(400).json({ error: error.message });
-
-  res.status(200).json({ message: "Senha redefinida com sucesso!" });
 };
 
 // Método para realizar signOut
