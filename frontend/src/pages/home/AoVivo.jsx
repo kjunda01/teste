@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { toast } from "react-toastify";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const AoVivo = () => {
   const { user, signOut } = useContext(AuthContext);
@@ -15,7 +15,7 @@ const AoVivo = () => {
      const { success, error } = await signOut();
 
      if (success) {
-       toast.success("Usuário deslogado: " + user.data.email);
+      //  toast.success("Usuário deslogado: " + user.data.email);
        navigate("/");
      } else {
        toast.error(error);

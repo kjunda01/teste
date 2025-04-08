@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { supabase } from "../../config/supabaseClient.js"; // ajuste o path
+import { supabase } from "../../config/supabaseClient.js";
 
 import PessoaSVG from "../../assets/svgs/PessoaSVG";
 import OlhoFechadoSVG from "../../assets/svgs/OlhoFechadoSVG";
@@ -54,7 +54,7 @@ const NewPassword = () => {
       toast.success("Senha redefinida com sucesso!");
       navigate("/login");
     } catch (error) {
-      const msg = error.response.data.error;
+      const msg = error.response.data.message;
       toast.error(msg);
       setErroDaApi(msg);
     }
