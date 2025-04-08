@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { supabase } from "../../config/supabaseClient.js"; // ajuste o path
 
 import PessoaSVG from "../../assets/svgs/PessoaSVG";
 import OlhoFechadoSVG from "../../assets/svgs/OlhoFechadoSVG";
@@ -58,6 +59,19 @@ const NewPassword = () => {
       setErroDaApi(msg);
     }
   };
+
+  useEffect(() => {
+    const hashParams = new URLSearchParams(window.location.hash.replace("#", "?"));
+    const access_token = hashParams.get("access_token");
+    const type = hashParams.get("type");
+
+    if (access_token && type === "recovery") {
+      supabase.auth.setSession({
+        access_token,
+        refresh_token: "",
+      });
+    }
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white md:bg-gray-200">

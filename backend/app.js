@@ -7,16 +7,23 @@ import fallbackRoutes from "./routes/fallbackRoutes.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import logger from "./middlewares/logger.js";
 
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 // Configura CORS corretamente
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+app.use(
+  cors({
+    origin: [
+      process.env.FRONTEND_URL,
+      "http://192.168.1.190:3000",
+      "http://192.168.1.190:5173",
+      "http://localhost:3000",
+      "http://localhost:5173",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.use(express.json());
 

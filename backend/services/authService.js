@@ -64,10 +64,20 @@ export const updateUserService = async (email, password) => {
 };
 
 // Função para updateUserPassword
-export const updateUserPasswordService = async (token, password) => {
-  const { error } = await supabase.auth.updateUser({ password }, { headers: { Authorization: `Bearer ${token}` } });
+export const updateUserPasswordService = async (userId, newPassword) => {
+  const response = await axios.patch(
+    `https://<your-project>.supabase.co/auth/v1/admin/users/${userId}`,
+    { password: newPassword },
+    {
+      headers: {
+        apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
-  if (error) throw new Error(error.message);
+  return response.data;
 };
 
 // Função para signOut
