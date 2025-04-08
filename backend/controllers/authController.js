@@ -4,7 +4,8 @@ import {
   resetPasswordForEmailService,
   getUserByEmailService,
   signOutService,
-  updateUserPasswordService
+  updateUserPasswordService,
+  setSessionService
 } from "../services/authService.js";
 
 // Método para realizar signUp
@@ -144,6 +145,23 @@ export const signOutController = async (req, res) => {
     res.status(200).json({ message: "Usuário deslogado!" });
   } catch (error) {
     // Trata erros e retorna uma resposta adequada
+    res.status(400).json({ error: error.message });
+  }
+};
+
+
+// Método para realizar setSession
+export const setSessionController = async (req, res) => {
+  const { access_token } = req.body;
+
+  if (!access_token) {
+    return res.status(400).json({ error: "access_token ausente" });
+  }
+
+  try {
+    const user = await setSessionService(access_token);
+    res.status(200).json({ message: "Sessão autenticada!", user });
+  } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };

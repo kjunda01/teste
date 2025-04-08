@@ -5,6 +5,7 @@ import {
   resetPasswordForEmailController,
   updateUserPasswordController,
   signOutController,
+  setSessionController,
 } from "../controllers/authController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import dotenv from "dotenv";
@@ -19,6 +20,7 @@ router.post("/signinwithpassword", signInWithPasswordController);
 router.post("/resetpasswordforemail", resetPasswordForEmailController);
 router.post("/updateuserpassword", updateUserPasswordController);
 router.post("/signout", signOutController);
+router.post("/setsession", setSessionController);
 
 // Rotas protegidas (exigem autenticação)
 

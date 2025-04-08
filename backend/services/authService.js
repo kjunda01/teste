@@ -4,13 +4,12 @@ import supabaseAdmin from "../config/supabaseServiceRoleClient.js";
 // Função para verificar se usuario existe
 export const getUserByEmailService = async (email) => {
   const { data, error } = await supabaseAdmin.auth.admin.listUsers();
-  
+
   if (error) throw error;
-  
+
   const user = data.users.find((user) => user.email === email);
 
   return user ? true : false;
-
 };
 
 // Função para signUp
@@ -66,8 +65,8 @@ export const updateUserService = async (email, password) => {
 
 // Função para updateUserPassword
 export const updateUserPasswordService = async (password) => {
-  const { data, error } = await supabase.auth.updateUser(password)
-  
+  const { data, error } = await supabase.auth.updateUser(password);
+
   if (error) throw error;
   return data;
 };
@@ -77,4 +76,11 @@ export const signOutService = async () => {
   const { data, error } = await supabase.auth.signOut();
   if (error) throw error;
   return data;
+};
+
+// Função para setSession
+export const setSessionService = async (access_token, refresh_token) => {
+  const { data, error } = await supabase.auth.getUser(access_token);
+  if (error) throw error;
+  return data.user;
 };
