@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "../../config/supabaseClient.js";
 import { toast } from "react-toastify";
 import OlhoFechadoSVG from "../../assets/svgs/OlhoFechadoSVG";
 import OlhoAbertoSVG from "../../assets/svgs/OlhoAbertoSVG";
 import LoadingCircle from "../../components/LoadingCircle.jsx";
+import axios from "axios";
 
 const NewPassword = () => {
   const navigate = useNavigate();
@@ -12,7 +12,6 @@ const NewPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [erroDaApi, setErroDaApi] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionRestored, setSessionRestored] = useState(false);
 
   const showPasswordIcon = () => {
     showPassword ? setShowPassword(false) : setShowPassword(true);
@@ -24,53 +23,75 @@ const NewPassword = () => {
   };
 
   useEffect(() => {
-    const hashParams = new URLSearchParams(window.location.hash.slice(1));
-    const accessToken = hashParams.get("access_token");
-    const refreshToken = hashParams.get("refresh_token");
+    // Extrai o hash da URL sem o símbolo #
+    const hash = window.location.hash.slice(1);
+    const hashParams = new URLSearchParams(hash);
 
-    if (accessToken && refreshToken) {
-      supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken }).then(({ data, error }) => {
-        if (error) {
-          toast.error("Erro ao restaurar sessão.");
-          console.error(error);
-        } else {
-          setSessionRestored(true);
-        }
-      });
-    } else {
-      toast.error("Token de redefinição ausente!");
-    }
+    // Inicializa o objeto vazio
+    const urlData = {};
+
+    // cria o objeto com as entradas do hash
+    [...hashParams.entries()].forEach(([key, value]) => {
+      console.log(`${key}: ${value}`);
+      urlData[key] = value;
+    });
+
+    // Armazena o objeto completo no localStorage como string JSON
+    localStorage.setItem("supabaseRecoverySession", JSON.stringify(urlData));
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (usuario.password !== usuario.confirmPassword) {
-      toast.error("As senhas não coincidem.");
-      return;
-    }
 
-    if (!sessionRestored) {
-      toast.error("Sessão de redefinição não restaurada.");
+    // Percorre o localstorage pra ver qual é a chave
+    // for (let key in localStorage) {
+    //   if (key.startsWith("sb") && key.endsWith("auth-token")) {
+    //     const session = localStorage.getItem(key);
+    //     setLocalStorageSession(JSON.parse(session));
+    //   }
+    // }
+
+    if (!localStorage.getItem("supabaseRecoverySession")) {
+      toast.error("Sessão não encontrada no localStorage.");
       return;
     }
 
     try {
       setIsLoading(true);
-      const { data, error } = await supabase.auth.updateUser({ password: usuario.password });
-      if (error) throw error;
+      const { setSessionData, setSessionStatus } = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/setsession`,
+        localStorage.getItem("supabaseRecoverySession")
+      );
+      console.log(setSessionData)
+      console.log(setSessionStatus);
 
-      toast.success("Senha atualizada com sucesso!");
+      // if (setSessionStatus === 200) {
+      //   const { updateUserPasswordData, updateUserPasswordStatus } = await axios.post(
+      //     `${import.meta.env.VITE_BACKEND_URL}/api/auth/updateuserpassword`,
+      //     {
+      //       password: usuario.password,
+      //     }
+      //   );
+      //   console.log(updateUserPasswordData.message);
+      // } else {
+      //   throw new Error("Erro ao definir a sessão.");
+      // }
+
+      // if ((await setSession).status !== 200) {
+      //   const error = updateUserPassword.data.message;
+      //   throw error;
+      // }
     } catch (error) {
-      toast.error(error);
-      setErroDaApi(error);
-      setIsLoading(false);
+      console.log(error);
+      const msg = error.response?.data?.message || "Erro inesperado.";
+      toast.error(msg);
+      setErroDaApi(msg);
     }
   };
 
   const handleLoadingComplete = () => {
     navigate("/home");
   };
-
   return (
     <>
       {isLoading && <LoadingCircle onComplete={handleLoadingComplete} />}

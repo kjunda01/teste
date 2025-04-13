@@ -21,6 +21,11 @@ const PasswordRecovery = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (!email) {
+      toast.error("Email obrigatório.");
+      throw new Error("Email obrigatório.");
+    }
+
     try {
       setIsLoading(true);
       toast.success("Siga as instruções no seu e-mail");
@@ -30,6 +35,8 @@ const PasswordRecovery = () => {
       const msg = error.response?.data?.error || "Erro inesperado.";
       toast.error(msg);
       setErroDaApi(msg);
+    } finally{
+      setIsLoading(false)
     }
   };
 

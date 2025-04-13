@@ -27,23 +27,21 @@ const SignUp = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (usuario.password !== usuario.confirmPassword) {
-      toast.error("As senhas não coincidem");
-      return;
-    }
-
     try {
-      setIsLoading(true);
+      if (usuario.password !== usuario.confirmPassword) {
+        toast.error("As senhas não coincidem");
+        return;
+      }
+
       const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`, {
         email: usuario.email,
         password: usuario.password,
       });
+      setIsLoading(true);
 
       if (error) throw error;
 
-      setTimeout(() => {
-        toast.success("Usuário criado com sucesso!");
-      }, 500);
+      toast.success("Usuário criado com sucesso!");
     } catch (error) {
       const msg = error.response.data.message;
       toast.error(msg);

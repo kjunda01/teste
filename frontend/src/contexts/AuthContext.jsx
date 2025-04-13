@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) setUser(JSON.parse(savedUser));
-    setLoading(false); 
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -23,11 +23,15 @@ export const AuthProvider = ({ children }) => {
 
   const signInWithPassword = async (email, password) => {
     try {
-      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signinwithpassword`, { email, password });
+      const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signinwithpassword`, {
+        email,
+        password,
+      });
       setUser(data);
+      if (error) throw error;
       return { success: true, user: data };
     } catch (error) {
-      const msg = error.response?.data?.error || "Erro ao fazer login";
+      const msg = error.response?.data?.error || error.response?.data?.message || "Erro ao fazer login";
       return { success: false, error: msg };
     }
   };
@@ -36,7 +40,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signout`);
       setUser(null);
-      if (error) throw new Error(error);
+      if (error) throw error;
       return { success: true };
     } catch (error) {
       const msg = error.response?.data?.error || "Erro ao fazer logout";

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -13,8 +13,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [erroDaApi, setErroDaApi] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
   const { signInWithPassword } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const showPasswordIcon = () => {
     showPassword ? setShowPassword(false) : setShowPassword(true);
@@ -33,11 +33,7 @@ const Login = () => {
       const { success, user, error } = await signInWithPassword(usuario.email, usuario.password);
       if (error) throw error;
 
-      if (success) {
-        setTimeout(() => {
-          toast.success("Bem vindo(a), " + user.data.email);
-        }, 500);
-      }
+      if (success) toast.success("Bem vindo(a), " + user.data.email);
     } catch (error) {
       toast.error(error);
       setErroDaApi(error);
@@ -48,23 +44,6 @@ const Login = () => {
   const handleLoadingComplete = () => {
     navigate("/home");
   };
-
-  // Para conseguir redirecionar do email de recuperação de senha para uma nova pagina
-  useEffect(() => {
-    const hash = window.location.hash;
-    if (hash) {
-      const params = new URLSearchParams(hash.slice(1)); // remove o `#`
-      const accessToken = params.get("access_token");
-      const type = params.get("type"); // pode ser `recovery` ou `signup`
-
-      if (accessToken && type === "recovery") {
-        // Limpa o hash da URL
-        window.history.replaceState(null, null, window.location.pathname);
-        // Redireciona para a página de redefinição de senha
-        navigate(`/newpassword?access_token=${accessToken}`);
-      }
-    }
-  }, []);
 
   return (
     <>
