@@ -32,7 +32,6 @@ const NewPassword = () => {
 
     // cria o objeto com as entradas do hash
     [...hashParams.entries()].forEach(([key, value]) => {
-      console.log(`${key}: ${value}`);
       urlData[key] = value;
     });
 
