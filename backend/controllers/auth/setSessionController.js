@@ -1,12 +1,14 @@
 import setSessionService from "../../services/auth/setSessionService.js";
 
 // Método para realizar setSession
-const setSessionController = async(req, res) => {
+const setSessionController = async (req, res) => {
   const supabaseRecoverySession = req.body;
+  console.log(supabaseRecoverySession);
 
-  if (!supabaseRecoverySession) {
-    return res.status(404).json({ message: "Sessão não encontrada" });
+  if (!supabaseRecoverySession.access_token || !supabaseRecoverySession.refresh_token) {
+    return res.status(400).json({ message: "Token inválido" });
   }
+ 
 
   try {
     await setSessionService(supabaseRecoverySession.access_token, supabaseRecoverySession.refresh_token);

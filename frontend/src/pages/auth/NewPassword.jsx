@@ -30,17 +30,28 @@ const NewPassword = () => {
     // Inicializa o objeto vazio
     const urlData = {};
 
-    // cria o objeto com as entradas do hash
-    [...hashParams.entries()].forEach(([key, value]) => {
+    hashParams.entries().forEach(([key, value]) => {
       urlData[key] = value;
     });
+    // cria o objeto com as entradas do hash
+    // [...hashParams.entries()].forEach(([key, value]) => {
+    //   urlData[key] = value;
+    // });
 
     // Armazena o objeto completo no localStorage como string JSON
-    localStorage.setItem("supabaseRecoverySession", JSON.stringify(urlData));
+    if (urlData.access_token && urlData.refresh_token) {
+      localStorage.setItem("supabaseRecoverySession", JSON.stringify(urlData));
+    }
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const session = JSON.parse(localStorage.getItem("supabaseRecoverySession"));
+    if (!session?.access_token || !session?.refresh_token) {
+      toast.error("Sessão inválida.");
+      return;
+    }
 
     // Percorre o localstorage pra ver qual é a chave
     // for (let key in localStorage) {
@@ -50,41 +61,21 @@ const NewPassword = () => {
     //   }
     // }
 
-    if (!localStorage.getItem("supabaseRecoverySession")) {
-      toast.error("Sessão não encontrada no localStorage.");
-      return;
-    }
-
     try {
       setIsLoading(true);
-      const { setSessionData, setSessionStatus } = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/auth/setsession`,
-        localStorage.getItem("supabaseRecoverySession")
-      );
-      console.log(setSessionData)
-      console.log(setSessionStatus);
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/setsession`, session);
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/updateuserpassword`, {
+        password: usuario.password,
+      });
 
-      // if (setSessionStatus === 200) {
-      //   const { updateUserPasswordData, updateUserPasswordStatus } = await axios.post(
-      //     `${import.meta.env.VITE_BACKEND_URL}/api/auth/updateuserpassword`,
-      //     {
-      //       password: usuario.password,
-      //     }
-      //   );
-      //   console.log(updateUserPasswordData.message);
-      // } else {
-      //   throw new Error("Erro ao definir a sessão.");
-      // }
-
-      // if ((await setSession).status !== 200) {
-      //   const error = updateUserPassword.data.message;
-      //   throw error;
-      // }
+      toast.success("Senha redefinida com sucesso!");
+      setTimeout(() => navigate("/login"), 2000);
     } catch (error) {
-      console.log(error);
       const msg = error.response?.data?.message || "Erro inesperado.";
       toast.error(msg);
       setErroDaApi(msg);
+    } finally {
+      setIsLoading(false);
     }
   };
 

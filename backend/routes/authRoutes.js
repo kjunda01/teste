@@ -19,6 +19,7 @@ router.post("/signinwithpassword", signInWithPasswordController);
 router.post("/resetpasswordforemail", resetPasswordForEmailController);
 router.post("/signout", signOutController);
 
+
 // Rotas protegidas (exigem autenticação)
 router.post("/setsession", setSessionController);
 router.post("/updateuserpassword", updateUserPasswordController);
