@@ -1,6 +1,6 @@
 const logger = (req, res, next) => {
   const timestamp = new Date().toLocaleString("pt-BR", {
-    timeZone: "America/Sao_Paulo"
+    timeZone: "America/Sao_Paulo",
   });
 
   const method = req.method;
@@ -8,10 +8,10 @@ const logger = (req, res, next) => {
   const ip = req.ip || req.connection.remoteAddress;
 
   // Aguarda o envio da resposta para capturar o status
-  res.on('finish', () => {
+  res.on("finish", () => {
     const status = res.statusCode;
-    console.log(
-      `[${timestamp}] | ${ip} | ${method} | ${url} | ${status}`
+    console.warn(
+      `[${timestamp}] | ${ip} | ${method} | ${status} | ${url}`,
     );
   });
 
