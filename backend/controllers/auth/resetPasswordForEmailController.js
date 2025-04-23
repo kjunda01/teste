@@ -5,16 +5,6 @@ import resetPasswordForEmailService from "../../services/auth/resetPasswordForEm
 const resetPasswordForEmailController = async(req, res) => {
   const { email } = req.body;
 
-  // // Validação básica dos dados
-  if (!email) {
-    return res.status(400).json({ message: "Email obrigatório." });
-  }
-
-  // se o usuário nao existir ele retorna erro
-  if (!(await getUserByEmailService(email))) {
-    return res.status(400).json({ message: "E-mail não existe na base de dados!" });
-  }
-
   try {
     // Chama o serviço para realizar o resetPasswordForEmail
     const data = await resetPasswordForEmailService(email);

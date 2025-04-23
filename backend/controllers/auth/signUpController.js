@@ -1,30 +1,9 @@
-import getUserByEmailService from "../../services/auth/getUserByEmailService.js";
+
 import signUpService from "../../services/auth/signUpService.js";
 
 // Método para realizar signUp
 const signUpController = async (req, res) => {
   const { email, password } = req.body;
-
-  // Validação básica dos dados
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email e senha são obrigatórios" });
-  }
-
-  // Validação de formato de e-mail
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({ message: "Email inválido" });
-  }
-
-  // Validação de comprimento da senha
-  if (password.length < 6) {
-    return res.status(400).json({ message: "A senha deve ter pelo menos 6 caracteres" });
-  }
-
-  // Verifica se o usuário já existe
-  if (await getUserByEmailService(email)) {
-    return res.status(409).json({ message: "Usuário já existe" });
-  }
 
   // Chama o serviço para criar o usuário
   const { data, error } = await signUpService(email, password);

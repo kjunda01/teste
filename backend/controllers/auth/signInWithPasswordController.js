@@ -5,16 +5,6 @@ import signInWithPasswordService from "../../services/auth/signInWithPasswordSer
 const signInWithPasswordController = async(req, res) => {
   const { email, password } = req.body;
 
-  // Validação básica dos dados
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email e senha são obrigatórios" });
-  }
-
-  // se o usuário nao existir ele retorna erro
-  if (!(await getUserByEmailService(email))) {
-    return res.status(400).json({ message: "E-mail não existe na base de dados!" });
-  }
-
   try {
     // Chama o serviço para realizar o login
     const data = await signInWithPasswordService(email, password);
