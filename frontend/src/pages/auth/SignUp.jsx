@@ -43,6 +43,7 @@ const SignUp = () => {
 
       toast.success("Usuário criado com sucesso!");
     } catch (error) {
+      console.log(error);
       const msg = error.response.data.message;
       toast.error(msg);
       setErroDaApi(msg);
