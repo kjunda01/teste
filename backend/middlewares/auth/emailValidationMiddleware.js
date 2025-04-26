@@ -5,7 +5,7 @@ const emailValidationMiddleware = (req, res, next) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (typeof email !== "string" || !emailRegex.test(email)) {
-    return res.status(400).json({ message: "Formato de email inválido" });
+    return res.status(400).json({ error: "Email inválido." });
   }
 
   next();

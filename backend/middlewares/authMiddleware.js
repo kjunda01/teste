@@ -1,6 +1,4 @@
 // middleware/authMiddleware.js
-import supabase from "../config/supabaseClient.js";
-
 const authMiddleware = async(req, res, next) => {
   try {
     console.log(req.headers);
