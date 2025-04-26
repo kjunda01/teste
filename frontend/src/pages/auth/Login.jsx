@@ -35,9 +35,11 @@ const Login = () => {
 
       if (success) toast.success("Bem vindo(a), " + user.data.email);
     } catch (error) {
+
       toast.error(error);
-      
+
       setErroDaApi(error);
+    } finally {
       setIsLoading(false);
     }
   };

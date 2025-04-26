@@ -28,26 +28,30 @@ const SignUp = () => {
     event.preventDefault();
 
     try {
+      setIsLoading(false);
       if (usuario.password !== usuario.confirmPassword) {
         toast.error("As senhas não coincidem.");
-        return
+        return;
       }
 
       const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/createUserWithEmailAndPassword`, {
         email: usuario.email,
         password: usuario.password,
       });
-      
+
       setIsLoading(true);
 
       if (error) throw error;
 
       toast.success("Usuário criado com sucesso!");
     } catch (error) {
-      const msg = error.response.data.error;
-      console.warn(msg);
+      let msg = error.response.data.error;
+      if (msg == "Firebase: Error (auth/email-already-in-use).") {
+        msg = "Email já cadastrado.";
+      }
       toast.error(msg);
       setErroDaApi(msg);
+    } finally {
     }
   };
 

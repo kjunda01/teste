@@ -28,16 +28,17 @@ const PasswordRecovery = () => {
 
     try {
       setIsLoading(true);
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/newpassword`, { email });
       toast.success("Siga as instruções no seu e-mail");
-      const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/newpassword`, { email });
-      if (error) throw error;
+      navigate("/home");
     } catch (error) {
       const msg = error.response?.data?.error || "Erro inesperado.";
       toast.error(msg);
       setErroDaApi(msg);
-    } finally{
-      setIsLoading(false)
+    } finally {
+      setIsLoading(false);
     }
+
   };
 
   const handleLoadingComplete = () => {

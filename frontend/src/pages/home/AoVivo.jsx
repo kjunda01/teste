@@ -1,43 +1,45 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const AoVivo = () => {
-  const { user, signOut } = useContext(AuthContext);
-  const navigate = useNavigate()
+  const { user, signOut, loading } = useContext(AuthContext);
+  const navigate = useNavigate();
 
- const handleLogout = async (event) => {
-   event.preventDefault();
-   
+  const [userData, setUserData] = useState(null);
 
-   try {
-     const { success, error } = await signOut();
+  // UseEffect para garantir que o usuário seja exibido assim que o estado for atualizado
+  useEffect(() => {
+    if (!loading && user) {
+      setUserData(user); // Atualiza userData com os dados do usuário
+    }
+  }, [loading, user]);
 
-     if (success) {
-      //  toast.success("Usuário deslogado: " + user.data.email);
-       navigate("/");
-     } else {
-       toast.error(error);
-       throw new Error(error);
-     }
-   } catch (error) {
-     // console.error("Erro completo:", error); // Mostra tudo
-     // console.error("Erro.response:", error.response); // Mostra a resposta da API
-     // console.error("Erro.response.data:", error.response?.data); // Mostra os dados de erro enviados pelo backend
-     //const msg = error.response?.data?.error || "Erro ao fazer login conta";
-     //setErroDaApi(msg);
-     //toast.error(msg);
-     toast.error(error);
-     
-   }
- };
+  const handleLogout = async (event) => {
+    event.preventDefault();
+    try {
+      const { success, error } = await signOut();
+
+      if (success) {
+        navigate("/");
+      } else {
+        toast.error(error);
+        throw new Error(error);
+      }
+    } catch (error) {
+      toast.error(error);
+    }
+  };
+
+  // Mostra uma tela de loading até que os dados do usuário estejam disponíveis
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div>
       <h1>Ao vivo!</h1>
-       
-      <h2>Usuário logado: {user.data.email}</h2>
+
+      {userData && <h2>Usuário logado: {userData.email}</h2>}
 
       <button className="bg-amber-600 rounded pointer" type="submit" onClick={handleLogout}>
         Logout

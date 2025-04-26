@@ -4,7 +4,8 @@ import { toast } from "react-toastify";
 import OlhoFechadoSVG from "../../assets/svgs/OlhoFechadoSVG";
 import OlhoAbertoSVG from "../../assets/svgs/OlhoAbertoSVG";
 import LoadingCircle from "../../components/LoadingCircle.jsx";
-import axios from "axios";
+import { getAuth, confirmPasswordReset } from "firebase/auth";
+
 
 const NewPassword = () => {
   const navigate = useNavigate();
@@ -23,61 +24,44 @@ const NewPassword = () => {
   };
 
   useEffect(() => {
-    // Extrai o hash da URL sem o símbolo #
-    const hash = window.location.hash.slice(1);
-    const hashParams = new URLSearchParams(hash);
-
-    // Inicializa o objeto vazio
-    const urlData = {};
-
-    hashParams.entries().forEach(([key, value]) => {
-      urlData[key] = value;
-    });
-    // cria o objeto com as entradas do hash
-    // [...hashParams.entries()].forEach(([key, value]) => {
-    //   urlData[key] = value;
-    // });
-
-    // Armazena o objeto completo no localStorage como string JSON
-    if (urlData.access_token && urlData.refresh_token) {
-      localStorage.setItem("supabaseRecoverySession", JSON.stringify(urlData));
+    // Verificando se o código de redefinição (oobCode) está presente na URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const oobCode = urlParams.get("oobCode");
+    if (!oobCode) {
+      toast.error("Link inválido.");
+      navigate("/login"); // Redireciona para a página de login caso o código não seja válido
     }
-  }, []);
+  }, [navigate]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+   e.preventDefault();
+   const urlParams = new URLSearchParams(window.location.search);
+   const oobCode = urlParams.get("oobCode");
 
-    const session = JSON.parse(localStorage.getItem("supabaseRecoverySession"));
-    if (!session?.access_token || !session?.refresh_token) {
-      toast.error("Sessão inválida.");
-      return;
-    }
+   if (!usuario.password) {
+     toast.error("Por favor, insira uma nova senha.");
+     return;
+   }
 
-    // Percorre o localstorage pra ver qual é a chave
-    // for (let key in localStorage) {
-    //   if (key.startsWith("sb") && key.endsWith("auth-token")) {
-    //     const session = localStorage.getItem(key);
-    //     setLocalStorageSession(JSON.parse(session));
-    //   }
-    // }
+   if (usuario.password !== usuario.confirmPassword) {
+     toast.error("As senhas não coincidem.");
+     return;
+   }
 
-    try {
-      setIsLoading(true);
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/setsession`, session);
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/updateuserpassword`, {
-        password: usuario.password,
-      });
+   try {
+     setIsLoading(true);
+     const auth = getAuth();
+     await confirmPasswordReset(auth, oobCode, usuario.password);
+     toast.success("Senha redefinida com sucesso!");
+     navigate("/login");
+   } catch (err) {
+     setErroDaApi(err.message);
+     toast.error("Erro ao redefinir a senha.");
+   } finally {
+     setIsLoading(false);
+   }
+ };
 
-      toast.success("Senha redefinida com sucesso!");
-      setTimeout(() => navigate("/login"), 2000);
-    } catch (error) {
-      const msg = error.response?.data?.message || "Erro inesperado.";
-      toast.error(msg);
-      setErroDaApi(msg);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleLoadingComplete = () => {
     navigate("/home");
