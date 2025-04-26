@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
 
   const signInWithPassword = async (email, password) => {
     try {
-      const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signinwithpassword`, {
+      const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signInWithEmailAndPassword`, {
         email,
         password,
       });
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     try {
-      const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signout`);
+      const { data, error } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signOut`);
       setUser(null);
       if (error) throw error;
       return { success: true };
