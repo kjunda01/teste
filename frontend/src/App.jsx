@@ -1,6 +1,5 @@
-// App.jsx
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Login from "./pages/auth/Login.jsx";
 import SignUp from "./pages/auth/SignUp.jsx";
@@ -36,17 +35,15 @@ const protectedRoutes = [
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        {publicRoutes.map(({ path, element }) => (
-          <Route key={path} path={path} element={element} />
-        ))}
+    <Routes>
+      {publicRoutes.map(({ path, element }) => (
+        <Route key={path} path={path} element={element} />
+      ))}
 
-        {protectedRoutes.map(({ path, element }) => (
-          <Route key={path} path={path} element={<ProtectedRoute>{element}</ProtectedRoute>} />
-        ))}
-      </Routes>
-    </BrowserRouter>
+      {protectedRoutes.map(({ path, element }) => (
+        <Route key={path} path={path} element={<ProtectedRoute>{element}</ProtectedRoute>} />
+      ))}
+    </Routes>
   );
 };
 
