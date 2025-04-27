@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./pages/auth/Login.jsx";
 import SignUp from "./pages/auth/SignUp.jsx";
 import PasswordRecovery from "./pages/auth/PasswordRecovery.jsx";
-import AoVivo from "./pages/home/AoVivo.jsx";
+import Home from "./pages/home/Home.jsx";
 import Contato from "./pages/extras/Contato.jsx";
 import Estatisticas from "./pages/extras/Estatisticas.jsx";
 import Consultar from "./pages/consulta/Consultar.jsx";
@@ -26,7 +26,7 @@ const publicRoutes = [
 
 // Rotas protegidas
 const protectedRoutes = [
-  { path: "/home", element: <AoVivo /> },
+  { path: "/home", element: <Home /> },
   { path: "/estatisticas", element: <Estatisticas /> },
   { path: "/consultar", element: <Consultar /> },
   { path: "/proprietarios", element: <Proprietarios /> },
