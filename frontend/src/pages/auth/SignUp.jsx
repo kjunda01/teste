@@ -42,6 +42,7 @@ const SignUp = () => {
       setIsLoading(true);
       if (error) throw error;
       toast.success("Usuário criado com sucesso!");
+      navigate("/home");
     } catch (error) {
       let msg = error?.response?.data?.error;
       if (msg == "Firebase: Error (auth/email-already-in-use).") {
