@@ -3,20 +3,23 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import PessoaSVG from "../../assets/svgs/PessoaSVG";
-import OlhoFechadoSVG from "../../assets/svgs/OlhoFechadoSVG";
-import OlhoAbertoSVG from "../../assets/svgs/OlhoAbertoSVG";
+import { FaRegEnvelope, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+
 import LoadingCircle from "../../components/LoadingCircle";
 
 const SignUp = () => {
   const [usuario, setUsuario] = useState({ email: "", password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [erroDaApi, setErroDaApi] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const showPasswordIcon = () => {
     showPassword ? setShowPassword(false) : setShowPassword(true);
+  };
+  const showConfirmPasswordIcon = () => {
+    showConfirmPassword ? setShowConfirmPassword(false) : setShowConfirmPassword(true);
   };
 
   const handleChange = (event) => {
@@ -112,7 +115,7 @@ const SignUp = () => {
                     onChange={handleChange}
                   />
                   <div className="flex items-center justify-center bg-gray-200 ml-2 p-2 rounded cursor-default">
-                    <PessoaSVG />
+                    <FaRegEnvelope />
                   </div>
                 </div>
               </fieldset>
@@ -140,7 +143,7 @@ const SignUp = () => {
                     className=" flex items-center justify-center bg-gray-200 ml-2 p-2 rounded cursor-pointer"
                     onClick={showPasswordIcon}
                   >
-                    {showPassword ? <OlhoAbertoSVG /> : <OlhoFechadoSVG />}
+                    {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
                   </div>
                 </div>
               </fieldset>
@@ -152,7 +155,7 @@ const SignUp = () => {
                 </label>
                 <div className="flex flex-row">
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type={showConfirmPassword ? "text" : "password"}
                     id="confirmPassword"
                     name="confirmPassword"
                     autoComplete="true"
@@ -166,9 +169,9 @@ const SignUp = () => {
                   />
                   <div
                     className=" flex items-center justify-center bg-gray-200 ml-2 p-2 rounded cursor-pointer"
-                    onClick={showPasswordIcon}
+                    onClick={showConfirmPasswordIcon}
                   >
-                    {showPassword ? <OlhoAbertoSVG /> : <OlhoFechadoSVG />}
+                    {showConfirmPassword ? <FaRegEye /> : <FaRegEyeSlash />}
                   </div>
                 </div>
               </fieldset>

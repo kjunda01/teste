@@ -2,9 +2,8 @@ import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import PessoaSVG from "../../assets/svgs/PessoaSVG";
-import OlhoFechadoSVG from "../../assets/svgs/OlhoFechadoSVG";
-import OlhoAbertoSVG from "../../assets/svgs/OlhoAbertoSVG";
+import { FaRegEnvelope, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+
 import { AuthContext } from "../../contexts/AuthContext";
 import LoadingCircle from "../../components/LoadingCircle";
 
@@ -99,7 +98,7 @@ const Login = () => {
                     onChange={handleChange}
                   />
                   <div className="flex items-center justify-center bg-gray-200 ml-2 p-2 rounded cursor-default">
-                    <PessoaSVG />
+                    <FaRegEnvelope />
                   </div>
                 </div>
               </fieldset>
@@ -127,7 +126,7 @@ const Login = () => {
                     className=" flex items-center justify-center bg-gray-200 ml-2 p-2 rounded cursor-pointer"
                     onClick={showPasswordIcon}
                   >
-                    {showPassword ? <OlhoAbertoSVG /> : <OlhoFechadoSVG />}
+                    {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
                   </div>
                 </div>
               </fieldset>

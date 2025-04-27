@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import OlhoFechadoSVG from "../../assets/svgs/OlhoFechadoSVG";
-import OlhoAbertoSVG from "../../assets/svgs/OlhoAbertoSVG";
 import LoadingCircle from "../../components/LoadingCircle.jsx";
 import { getAuth, confirmPasswordReset } from "firebase/auth";
-
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 const NewPassword = () => {
   const navigate = useNavigate();
   const [usuario, setUsuario] = useState({ password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [erroDaApi, setErroDaApi] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const showPasswordIcon = () => {
     showPassword ? setShowPassword(false) : setShowPassword(true);
+  };
+  const showConfirmPasswordIcon = () => {
+    showConfirmPassword ? setShowConfirmPassword(false) : setShowConfirmPassword(true);
   };
 
   const handleChange = (e) => {
@@ -33,35 +35,34 @@ const NewPassword = () => {
     }
   }, [navigate]);
 
- const handleSubmit = async (e) => {
-   e.preventDefault();
-   const urlParams = new URLSearchParams(window.location.search);
-   const oobCode = urlParams.get("oobCode");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const urlParams = new URLSearchParams(window.location.search);
+    const oobCode = urlParams.get("oobCode");
 
-   if (!usuario.password) {
-     toast.error("Por favor, insira uma nova senha.");
-     return;
-   }
+    if (!usuario.password) {
+      toast.error("Por favor, insira uma nova senha.");
+      return;
+    }
 
-   if (usuario.password !== usuario.confirmPassword) {
-     toast.error("As senhas não coincidem.");
-     return;
-   }
+    if (usuario.password !== usuario.confirmPassword) {
+      toast.error("As senhas não coincidem.");
+      return;
+    }
 
-   try {
-     setIsLoading(true);
-     const auth = getAuth();
-     await confirmPasswordReset(auth, oobCode, usuario.password);
-     toast.success("Senha redefinida com sucesso!");
-     navigate("/login");
-   } catch (err) {
-     setErroDaApi(err.message);
-     toast.error("Erro ao redefinir a senha.");
-   } finally {
-     setIsLoading(false);
-   }
- };
-
+    try {
+      setIsLoading(true);
+      const auth = getAuth();
+      await confirmPasswordReset(auth, oobCode, usuario.password);
+      toast.success("Senha redefinida com sucesso!");
+      navigate("/login");
+    } catch (err) {
+      setErroDaApi(err.message);
+      toast.error("Erro ao redefinir a senha.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleLoadingComplete = () => {
     navigate("/home");
@@ -114,7 +115,7 @@ const NewPassword = () => {
                     className="flex items-center justify-center bg-gray-200 ml-2 p-2 rounded cursor-pointer"
                     onClick={showPasswordIcon}
                   >
-                    {showPassword ? <OlhoAbertoSVG /> : <OlhoFechadoSVG />}
+                    {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
                   </div>
                 </div>
               </fieldset>
@@ -140,9 +141,9 @@ const NewPassword = () => {
                   />
                   <div
                     className="flex items-center justify-center bg-gray-200 ml-2 p-2 rounded cursor-pointer"
-                    onClick={showPasswordIcon}
+                    onClick={showConfirmPasswordIcon}
                   >
-                    {showPassword ? <OlhoAbertoSVG /> : <OlhoFechadoSVG />}
+                    {showConfirmPassword ? <FaRegEye /> : <FaRegEyeSlash />}
                   </div>
                 </div>
               </fieldset>

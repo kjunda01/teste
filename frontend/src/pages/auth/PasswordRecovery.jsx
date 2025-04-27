@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import PessoaSVG from "../../assets/svgs/PessoaSVG";
+import { FaRegEnvelope } from "react-icons/fa";
 
 import axios from "axios";
 import LoadingCircle from "../../components/LoadingCircle";
@@ -27,8 +27,6 @@ const PasswordRecovery = () => {
     //   // throw new Error("Email obrigatório.");
     // }
 
-  
-
     try {
       setIsLoading(true);
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/newpassword`, { email });
@@ -41,7 +39,6 @@ const PasswordRecovery = () => {
     } finally {
       setIsLoading(false);
     }
-
   };
 
   const handleLoadingComplete = () => {
@@ -101,7 +98,7 @@ const PasswordRecovery = () => {
                     onChange={handleChange}
                   />
                   <div className="flex items-center justify-center bg-gray-200 ml-2 p-2 rounded cursor-default">
-                    <PessoaSVG />
+                    <FaRegEnvelope />
                   </div>
                 </div>
               </fieldset>

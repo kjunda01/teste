@@ -54,7 +54,6 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true, user: currentUser };
     } catch (error) {
-      
       let msg = error.message || "Erro ao fazer login";
       if (error == "FirebaseError: Firebase: Error (auth/invalid-email).") {
         msg = "Email inválido.";
