@@ -40,18 +40,17 @@ const SignUp = () => {
       });
 
       setIsLoading(true);
-
       if (error) throw error;
-
       toast.success("Usuário criado com sucesso!");
     } catch (error) {
-      let msg = error.response.data.error;
+      let msg = error?.response?.data?.error;
       if (msg == "Firebase: Error (auth/email-already-in-use).") {
         msg = "Email já cadastrado.";
       }
       toast.error(msg);
       setErroDaApi(msg);
     } finally {
+      setIsLoading(false);
     }
   };
 
