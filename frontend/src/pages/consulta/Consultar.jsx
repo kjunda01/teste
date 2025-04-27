@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const Consulta = () => {
-  return (
-    <div>Consulta</div>
-  )
-}
+  return <div>Consulta</div>;
+};
 
-export default Consulta
+export default Consulta;
