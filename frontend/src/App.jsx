@@ -7,12 +7,14 @@ import PasswordRecovery from "./pages/auth/PasswordRecovery.jsx";
 import Home from "./pages/home/Home.jsx";
 import Contato from "./pages/extras/Contato.jsx";
 import Estatisticas from "./pages/extras/Estatisticas.jsx";
-import Consultar from "./pages/consulta/Consultar.jsx";
-import Proprietarios from "./pages/consulta/Proprietarios.jsx";
-import Veiculos from "./pages/consulta/Veiculos.jsx";
+import Consultar from "./pages/veiculos/Consultar.jsx";
+import Proprietarios from "./pages/veiculos/Proprietarios.jsx";
+import Veiculos from "./pages/veiculos/Veiculos.jsx";
+import NovoVeiculo from "./pages/veiculos/NovoVeiculo.jsx";
 
 import ProtectedRoute from "./services/ProtectedRoute.jsx";
 import NewPassword from "./pages/auth/NewPassword.jsx";
+import AoVivo from "./pages/aovivo/AoVivo.jsx";
 
 // Rotas públicas
 const publicRoutes = [
@@ -27,9 +29,11 @@ const publicRoutes = [
 // Rotas protegidas
 const protectedRoutes = [
   { path: "/home", element: <Home /> },
+  { path: "/aovivo", element: <AoVivo /> },
   { path: "/estatisticas", element: <Estatisticas /> },
   { path: "/consultar", element: <Consultar /> },
   { path: "/proprietarios", element: <Proprietarios /> },
+  { path: "/novoveiculo", element: <NovoVeiculo /> },
   { path: "/veiculos", element: <Veiculos /> },
 ];
 
