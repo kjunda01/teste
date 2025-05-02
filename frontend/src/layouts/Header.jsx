@@ -3,6 +3,7 @@ import { FaUser } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { toast } from "react-toastify";
+import HoraAtual from "../components/HoraAtual";
 
 const Header = () => {
   const { user, signOut, loading } = useContext(AuthContext);
@@ -20,7 +21,7 @@ const Header = () => {
     event.preventDefault();
     try {
       const { success, error } = await signOut();
-      
+
       if (success) {
         toast.info("Desconectado");
         navigate("/");
@@ -35,21 +36,22 @@ const Header = () => {
 
   return (
     <header className="bg-gray-800 text-blue-900 h-[10vh] flex justify-between items-start p-4 relative z-[100] md:flex-col md:h-auto md:py-2">
-      {/* Logo */}
-      {/* <Link to="/home">
-        <img
-          src="https://unilavras.edu.br/new_site/wp-content/uploads/2018/10/Logo-para-site-barra-de-menu-1.png"
-          alt="Logo do projeto Unipark"
-          loading="lazy"
-          className="h-10 md:h-8"
-        />
-      </Link> */}
-
       {/* Navegação */}
 
       <nav className="flex justify-between w-full md:flex-row md:justify-between">
         <div className="flex flex-row items-center justify-center">
           <ul className="flex justify-center items-center list-none m-0 p-0 flex-wrap">
+            <li>
+              {/* Logo */}
+              <Link to="/home">
+                <img
+                  src="https://unilavras.edu.br/new_site/wp-content/uploads/2018/10/Logo-para-site-barra-de-menu-1.png"
+                  alt="Logo do projeto Unipark"
+                  loading="lazy"
+                  className="h-5 md:h-5"
+                />
+              </Link>
+            </li>
             {/* AO VIVO */}
             <li className="mx-4 px-2 py-1 cursor-pointer transition-all hover:bg-yellow-400 rounded">
               <Link to="/aovivo" className="text-white font-bold no-underline transition-colors hover:text-gray-800">
@@ -59,14 +61,14 @@ const Header = () => {
 
             {/* CONSULTAR */}
             <li className="mx-4 px-2 py-1 cursor-pointer transition-all hover:bg-yellow-400 rounded">
-              <Link to="/buscarveiculo" className="text-white font-bold no-underline transition-colors hover:text-gray-800">
+              <Link to="/consultar" className="text-white font-bold no-underline transition-colors hover:text-gray-800">
                 Consultar
               </Link>
             </li>
 
             {/* NOVO VEICULO */}
             <li className="mx-4 px-2 py-1 cursor-pointer transition-all hover:bg-yellow-400 rounded">
-              <Link to="/cadastrarveiculo" className="text-white font-bold no-underline transition-colors hover:text-gray-800">
+              <Link to="/novoveiculo" className="text-white font-bold no-underline transition-colors hover:text-gray-800">
                 Novo Veículo
               </Link>
             </li>
@@ -76,6 +78,7 @@ const Header = () => {
         <div>
           <ul>
             <li className="mx-4 px-2 py-1 cursor-pointer transition-all text-white rounded flex flex-row items-center justify-center gap-4">
+              <HoraAtual />
               <p className="mx-4 px-2 py-1 cursor-pointer transition-all hover:bg-yellow-400 rounded flex gap-2 items-center justify-center">
                 <FaUser />
                 {user ? <Link to="/home">{user.email}</Link> : <span>Indisponível...</span>}
