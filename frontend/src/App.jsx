@@ -1,20 +1,25 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./services/ProtectedRoute.jsx";
 
 import Login from "./pages/auth/Login.jsx";
 import SignUp from "./pages/auth/SignUp.jsx";
 import PasswordRecovery from "./pages/auth/PasswordRecovery.jsx";
+import NewPassword from "./pages/auth/NewPassword.jsx";
+import Perfil from "./pages/auth/Perfil.jsx";
+
 import Home from "./pages/home/Home.jsx";
 import Contato from "./pages/extras/Contato.jsx";
 import Estatisticas from "./pages/extras/Estatisticas.jsx";
-import Consultar from "./pages/veiculos/Consultar.jsx";
-import Proprietarios from "./pages/veiculos/Proprietarios.jsx";
+import AoVivo from "./pages/aovivo/AoVivo.jsx";
+
+import Proprietarios from "./pages/proprietarios/Proprietarios.jsx"
+import NovoProprietario from "./pages/proprietarios/NovoProprietario.jsx";
+import ConsultarProprietarios from "./pages/proprietarios/ConsultarProprierarios.jsx";
+
 import Veiculos from "./pages/veiculos/Veiculos.jsx";
 import NovoVeiculo from "./pages/veiculos/NovoVeiculo.jsx";
-
-import ProtectedRoute from "./services/ProtectedRoute.jsx";
-import NewPassword from "./pages/auth/NewPassword.jsx";
-import AoVivo from "./pages/aovivo/AoVivo.jsx";
+import ConsultarVeiculos from "./pages/veiculos/ConsultarVeiculos.jsx";
 
 // Rotas públicas
 const publicRoutes = [
@@ -31,10 +36,13 @@ const protectedRoutes = [
   { path: "/home", element: <Home /> },
   { path: "/aovivo", element: <AoVivo /> },
   { path: "/estatisticas", element: <Estatisticas /> },
-  { path: "/consultar", element: <Consultar /> },
-  { path: "/proprietarios", element: <Proprietarios /> },
-  { path: "/novoveiculo", element: <NovoVeiculo /> },
+  { path: "/perfil", element: <Perfil /> },
   { path: "/veiculos", element: <Veiculos /> },
+  { path: "/veiculos/consultar", element: <ConsultarVeiculos /> },
+  { path: "/veiculos/cadastrar", element: <NovoVeiculo /> },
+  { path: "/proprietarios", element: <Proprietarios /> },
+  { path: "/proprietarios/consultar", element: <ConsultarProprietarios /> },
+  { path: "/proprietarios/cadastrar", element: <NovoProprietario /> },
 ];
 
 const App = () => {
