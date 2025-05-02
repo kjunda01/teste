@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { toast } from "react-toastify";
 import HoraAtual from "../components/HoraAtual";
+import MenuPrincipal from "../components/MenuPrincipal";
 
 const Header = () => {
   const { user, signOut, loading } = useContext(AuthContext);
@@ -40,39 +41,7 @@ const Header = () => {
 
       <nav className="flex justify-between w-full md:flex-row md:justify-between">
         <div className="flex flex-row items-center justify-center">
-          <ul className="flex justify-center items-center list-none m-0 p-0 flex-wrap">
-            <li>
-              {/* Logo */}
-              <Link to="/home">
-                <img
-                  src="https://unilavras.edu.br/new_site/wp-content/uploads/2018/10/Logo-para-site-barra-de-menu-1.png"
-                  alt="Logo do projeto Unipark"
-                  loading="lazy"
-                  className="h-5 md:h-5"
-                />
-              </Link>
-            </li>
-            {/* AO VIVO */}
-            <li className="mx-4 px-2 py-1 cursor-pointer transition-all hover:bg-yellow-400 rounded">
-              <Link to="/aovivo" className="text-white font-bold no-underline transition-colors hover:text-gray-800">
-                AO VIVO
-              </Link>
-            </li>
-
-            {/* CONSULTAR */}
-            <li className="mx-4 px-2 py-1 cursor-pointer transition-all hover:bg-yellow-400 rounded">
-              <Link to="/consultar" className="text-white font-bold no-underline transition-colors hover:text-gray-800">
-                Consultar
-              </Link>
-            </li>
-
-            {/* NOVO VEICULO */}
-            <li className="mx-4 px-2 py-1 cursor-pointer transition-all hover:bg-yellow-400 rounded">
-              <Link to="/novoveiculo" className="text-white font-bold no-underline transition-colors hover:text-gray-800">
-                Novo Veículo
-              </Link>
-            </li>
-          </ul>
+          <MenuPrincipal />
         </div>
 
         <div>
