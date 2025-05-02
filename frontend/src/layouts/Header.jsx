@@ -5,36 +5,41 @@ import { AuthContext } from "../contexts/AuthContext";
 import { toast } from "react-toastify";
 import HoraAtual from "../components/HoraAtual";
 import MenuPrincipal from "../components/MenuPrincipal";
+import ConfirmModal from "../components/ConfirmModal";
 
 const Header = () => {
   const { user, signOut, loading } = useContext(AuthContext);
   const navigate = useNavigate();
-
   const [userData, setUserData] = useState(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
-      setUserData(user); // Atualiza userData com os dados do usuário
+      setUserData(user);
     }
   }, [loading, user]);
 
-  const handleLogout = async (event) => {
-    event.preventDefault();
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = async () => {
+    setShowLogoutModal(false);
+
     try {
       const { success, error } = await signOut();
 
       if (success) {
-        toast.info("Desconectado");
+        toast.success("Volte sempre!.");
         navigate("/");
       } else {
         toast.error(error);
-        throw new Error(error);
       }
     } catch (error) {
-      toast.error(error);
+      toast.error(error.message || "Erro ao deslogar.");
     }
   };
-
   return (
     <header className="bg-gray-800 text-blue-900 h-[10vh] flex justify-between items-start p-4 relative z-[100] md:flex-col md:h-auto md:py-2">
       {/* Navegação */}
@@ -64,6 +69,14 @@ const Header = () => {
           </ul>
         </div>
       </nav>
+      {/* Modal de confirmação */}
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        title="Deseja sair?"
+        message="Você realmente deseja encerrar a sessão?"
+        onConfirm={confirmLogout}
+        onCancel={() => setShowLogoutModal(false)}
+      />
     </header>
   );
 };
