@@ -6,10 +6,12 @@ import { FaRegEnvelope, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 import { AuthContext } from "../../contexts/AuthContext";
 import LoadingCircle from "../../components/LoadingCircle";
+import ComponentLoader from "../../components/ComponentLoader";
 
 const Login = () => {
   const [usuario, setUsuario] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [logoLoaded, setLogoLoaded] = useState(false);
   const [erroDaApi, setErroDaApi] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { signInWithPassword } = useContext(AuthContext);
@@ -32,12 +34,13 @@ const Login = () => {
       const { success, user, error } = await signInWithPassword(usuario.email, usuario.password);
       if (error) throw error;
 
-      if (success) toast.success("Bem vindo(a), " + user.data.email);
+      
     } catch (error) {
       toast.error(error);
       setErroDaApi(error);
     } finally {
       setIsLoading(false);
+      toast.success("Bem vindo(a), " + usuario.email);
     }
   };
 
@@ -53,13 +56,16 @@ const Login = () => {
           <div className="m-0 h-full w-full p-6 bg-white md:rounded-lg md:shadow-2xl md:w-md lg:w-lg xl:w-xl 2xl:w-2xl ">
             {/* Título */}
             <div className="flex flex-col items-center text-center justify-center">
-              <a href="https://unilavras.edu.br/0" target="_blank">
-                <img
-                  src="https://novoportal.unilavras.edu.br/assets/svg/logo-full.svg"
-                  alt=""
-                  className="w-14 h-14 md:w-18 md:h-18 lg:w-22 lg:h-22"
-                />
-              </a>
+              <ComponentLoader isLoading={!logoLoaded}>
+                <a href="https://unilavras.edu.br/0" target="_blank" rel="noopener noreferrer">
+                  <img
+                    src="https://novoportal.unilavras.edu.br/assets/svg/logo-full.svg"
+                    alt="Logo Unilavras"
+                    onLoad={() => setLogoLoaded(true)}
+                    className="w-14 h-14 md:w-18 md:h-18 lg:w-22 lg:h-22"
+                  />
+                </a>
+              </ComponentLoader>
 
               <h1 className="text-3xl font-semibold text-center mb-4">
                 <span className="text-sky-500 font-helvetica">UNI</span>
