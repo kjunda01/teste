@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import LoadingCircle from "./LoadingCircle";
+
+import ComponentLoader from "./ComponentLoader";
 
 const UltimoVeiculo = () => {
   const [veiculos, setVeiculos] = useState([]);
@@ -23,16 +24,14 @@ const UltimoVeiculo = () => {
   }, []);
 
   return (
-    <>
-      {/* Carregamento */}
+    <ComponentLoader isLoading={isLoading}>
       {isLoading ? (
-        <div className="flex justify-center items-center w-full h-full">
-          <LoadingCircle />
-        </div>
+        <div className="flex justify-center items-center w-full h-full"></div>
       ) : (
         // Exibe os veículos
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {veiculos.slice(0, 2).map((veiculo) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+          {veiculos.slice(0, 4).map((veiculo) => (
+            <ComponentLoader isLoading={isLoading}>
             <div key={veiculo.id} className="bg-white shadow-lg rounded-xl p-6 border border-gray-200">
               <div className="bg-gray-100 p-4 rounded-lg mb-4">
                 <p className="text-sm text-gray-600">Placa</p>
@@ -41,16 +40,14 @@ const UltimoVeiculo = () => {
                 </p>
               </div>
 
-               
-                <p className="text-sm text-gray-600">Modelo</p>
-                <p className="text-xl font-semibold text-gray-800">{veiculo.modelo}</p>
-               
-
+              <p className="text-sm text-gray-600">Modelo</p>
+              <p className="text-xl font-semibold text-gray-800">{veiculo.modelo}</p>
             </div>
+          </ComponentLoader>
           ))}
         </div>
       )}
-    </>
+    </ComponentLoader>
   );
 };
 
