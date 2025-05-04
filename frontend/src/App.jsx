@@ -1,61 +1,32 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
-import ProtectedRoute from "./services/ProtectedRoute.jsx";
-
-import Login from "./pages/auth/Login.jsx";
-import SignUp from "./pages/auth/SignUp.jsx";
-import PasswordRecovery from "./pages/auth/PasswordRecovery.jsx";
-import NewPassword from "./pages/auth/NewPassword.jsx";
-import Perfil from "./pages/auth/Perfil.jsx";
-
-import Home from "./pages/home/Home.jsx";
-import Contato from "./pages/extras/Contato.jsx";
-import Estatisticas from "./pages/extras/Estatisticas.jsx";
-import AoVivo from "./pages/aovivo/AoVivo.jsx";
-
-import Proprietarios from "./pages/proprietarios/Proprietarios.jsx"
-import NovoProprietario from "./pages/proprietarios/NovoProprietario.jsx";
-import ConsultarProprietarios from "./pages/proprietarios/ConsultarProprierarios.jsx";
-
-import Veiculos from "./pages/veiculos/Veiculos.jsx";
-import NovoVeiculo from "./pages/veiculos/NovoVeiculo.jsx";
-import ConsultarVeiculos from "./pages/veiculos/ConsultarVeiculos.jsx";
-
-// Rotas públicas
-const publicRoutes = [
-  { path: "/", element: <Login /> },
-  { path: "/login", element: <Login /> },
-  { path: "/signup", element: <SignUp /> },
-  { path: "/passwordrecovery", element: <PasswordRecovery /> },
-  { path: "/contato", element: <Contato /> },
-  { path: "/newpassword", element: <NewPassword /> },
-];
-
-// Rotas protegidas
-const protectedRoutes = [
-  { path: "/home", element: <Home /> },
-  { path: "/aovivo", element: <AoVivo /> },
-  { path: "/estatisticas", element: <Estatisticas /> },
-  { path: "/perfil", element: <Perfil /> },
-  { path: "/veiculos", element: <Veiculos /> },
-  { path: "/veiculos/consultar", element: <ConsultarVeiculos /> },
-  { path: "/veiculos/cadastrar", element: <NovoVeiculo /> },
-  { path: "/proprietarios", element: <Proprietarios /> },
-  { path: "/proprietarios/consultar", element: <ConsultarProprietarios /> },
-  { path: "/proprietarios/cadastrar", element: <NovoProprietario /> },
-];
+import ProtectedRoute from "./services/ProtectedRoute";
+import MainLayout from "./layouts/MainLayout";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { MenuProvider } from "./contexts/MenuContext";
+import { publicRoutes, protectedRoutes } from "./config/routesConfig";
 
 const App = () => {
   return (
-    <Routes>
-      {publicRoutes.map(({ path, element }) => (
-        <Route key={path} path={path} element={element} />
-      ))}
+    <MenuProvider>
+      <Routes>
+        {/* Rotas públicas */}
+        {publicRoutes.map(({ path, element }) => (
+          <Route key={path} path={path} element={element} />
+        ))}
 
-      {protectedRoutes.map(({ path, element }) => (
-        <Route key={path} path={path} element={<ProtectedRoute>{element}</ProtectedRoute>} />
-      ))}
-    </Routes>
+        {/* Rotas protegidas */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<MainLayout />}>
+            {protectedRoutes.map(({ path, element }) => (
+              <Route key={path} path={path} element={element} />
+            ))}
+          </Route>
+        </Route>
+
+        {/* Se não encontrar nenhuma rota vai para o home */}
+        <Route path="*" element={<Navigate to="/home" replace />} />
+      </Routes>
+    </MenuProvider>
   );
 };
 
