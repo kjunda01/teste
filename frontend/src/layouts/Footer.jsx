@@ -21,7 +21,7 @@ const socialLinks = [
 const Footer = () => {
   return (
     <footer className="bg-gray-800 text-white flex flex-col items-center justify-center p-5 relative z-10">
-      <ul className="flex gap-5 list-none p-0 m-0 ">
+      <ul className="flex gap-5">
         {socialLinks.map((link) => (
           <li
             key={link.label}
@@ -39,10 +39,7 @@ const Footer = () => {
           </li>
         ))}
       </ul>
-      <span className="text-center mt-2">
-        UNILAVRAS - UNIPARK <br />
-        &copy; Todos os direitos reservados - 2024
-      </span>
+      <span className="text-center mt-1">UNILAVRAS - UNIPARK - &copy; Todos os direitos reservados - 2024</span>
     </footer>
   );
 };
