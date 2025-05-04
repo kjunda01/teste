@@ -1,12 +1,8 @@
-import React, { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-
-import { FaRegEnvelope, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-
-import { AuthContext } from "../../contexts/AuthContext";
+import React, { useState } from "react";
 import LoadingCircle from "../../components/LoadingCircle";
 import ComponentLoader from "../../components/ComponentLoader";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [mensagem, setMensagem] = useState({ remetente: "", email: "", text: "" });
