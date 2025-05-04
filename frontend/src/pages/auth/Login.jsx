@@ -35,7 +35,6 @@ const Login = () => {
       if (error) throw error;
       if (success) toast.success("Bem vindo(a), " + user.email);
     } catch (error) {
-      console.log(error)
       toast.error(error);
       setErroDaApi(error);
     } finally {
