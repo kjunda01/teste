@@ -33,14 +33,13 @@ const Login = () => {
       setIsLoading(true);
       const { success, user, error } = await signInWithPassword(usuario.email, usuario.password);
       if (error) throw error;
-
-      
+      if (success) toast.success("Bem vindo(a), " + user.email);
     } catch (error) {
+      console.log(error)
       toast.error(error);
       setErroDaApi(error);
     } finally {
       setIsLoading(false);
-      toast.success("Bem vindo(a), " + usuario.email);
     }
   };
 
