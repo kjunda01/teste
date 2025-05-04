@@ -74,11 +74,11 @@ const SignUp = () => {
                 <img
                   src="https://novoportal.unilavras.edu.br/assets/svg/logo-full.svg"
                   alt=""
-                  className="w-14 h-14 md:w-18 md:h-18 lg:w-22 lg:h-22"
+                  className="w-8 h-8 md:w-12 md:h-12 lg:w-16 lg:h-16"
                 />
               </a>
 
-              <h1 className="text-3xl font-semibold text-center mb-4">
+              <h1 className="text-1xl font-semibold text-center mb-4">
                 <span className="text-sky-500 font-helvetica">UNI</span>
                 <span className="text-blue-950 font-bold">PARK</span>
               </h1>
@@ -86,7 +86,7 @@ const SignUp = () => {
             <h2 className="text-xl font-medium text-center mb-6">Novo usuário</h2>
 
             {/* Texto de inscrição */}
-            <p className="text-center text-gray-600 mb-4">
+            <p className="text-center text-gray-600 mb-3">
               Já possui uma conta? <span></span>
               <Link to="/login" className="text-blue-500 hover:text-blue-950 text-xs">
                 Faça login agora!
@@ -94,7 +94,7 @@ const SignUp = () => {
             </p>
 
             {/* Formulário */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3">
               {/* Campo de Email */}
               <fieldset className="Input">
                 <label htmlFor="email" className="font-bold">
@@ -105,7 +105,7 @@ const SignUp = () => {
                     type="text"
                     id="email"
                     name="email"
-                    className={`bg-gray-50 w-full px-4 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 ${
+                    className={`bg-gray-50 w-full px-3 py-1 pr-12 border rounded-md focus:outline-none focus:ring-2 ${
                       erroDaApi ? "border-red-300 ring-red-300" : "border-gray-300 focus:ring-blue-400"
                     }`}
                     aria-required="true"
@@ -130,7 +130,7 @@ const SignUp = () => {
                     type={showPassword ? "text" : "password"}
                     id="password"
                     name="password"
-                    className={`bg-gray-50 w-full px-4 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 ${
+                    className={`bg-gray-50 w-full px-3 py-1 pr-12 border rounded-md focus:outline-none focus:ring-2 ${
                       erroDaApi ? "border-red-300 ring-red-300" : "border-gray-300 focus:ring-blue-400"
                     }`}
                     aria-required="true"
@@ -159,7 +159,7 @@ const SignUp = () => {
                     id="confirmPassword"
                     name="confirmPassword"
                     autoComplete="true"
-                    className={`bg-gray-50 w-full px-4 py-2 pr-12 border rounded-md focus:outline-none focus:ring-2 ${
+                    className={`bg-gray-50 w-full px-3 py-1 pr-12 border rounded-md focus:outline-none focus:ring-2 ${
                       erroDaApi ? "border-red-300 ring-red-300" : "border-gray-300 focus:ring-blue-400"
                     }`}
                     aria-required="true"
