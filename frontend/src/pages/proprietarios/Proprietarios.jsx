@@ -1,9 +1,5 @@
-import React from 'react'
-
 const Proprietarios = () => {
-  return (
-    <div>Proprietarios</div>
-  )
-}
+  return <h1>Proprietarios</h1>;
+};
 
-export default Proprietarios
+export default Proprietarios;

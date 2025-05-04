@@ -1,9 +1,5 @@
-import React from 'react'
-
 const NovoProprietario = () => {
-  return (
-    <div>NovoProprietario</div>
-  )
-}
+  return <h1>Cadastrar Proprietario</h1>;
+};
 
-export default NovoProprietario
+export default NovoProprietario;
