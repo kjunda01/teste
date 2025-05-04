@@ -29,3 +29,10 @@
 .animate-fade {
     animation: fade 0.5s ease-in-out forwards;
 }
+
+@font-face {
+    font-family: 'FE Engschrift';
+    src: url('./assets/fonts/fe-engschrift.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
