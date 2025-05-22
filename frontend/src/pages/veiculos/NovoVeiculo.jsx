@@ -1,277 +1,249 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import APIFIPE from "../../services/apiFIPE";
-import MOCKAPI from "../../services/apiMOCKAPI";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useContext, useState } from "react";
+import { NovoVeiculoContext } from "../../contexts/NovoVeiculoContext";
+import ConfirmModal from "../../components/ConfirmModal";
+import VeiculosTipo from "../../components/veiculos/VeiculosTipo";
+import VeiculosMarca from "../../components/veiculos/VeiculosMarca";
+import VeiculosModelo from "../../components/veiculos/VeiculosModelo";
+import VeiculosAno from "../../components/veiculos/VeiculosAno";
+import VeiculosCor from "../../components/veiculos/VeiculosCor";
+import PlacaAntiga from "../../components/veiculos/PlacaAntiga";
+import PlacaMercosul from "../../components/veiculos/PlacaMercosul";
+import Select from "react-select";
+import { estadosBrasileiros } from "../../utils/EstadosBrasileiros";
 
 const PaginaNovoVeiculo = () => {
-  const [veiculo, setVeiculo] = useState({
-    tipo: "",
-    marca: "",
-    modelo: "",
-    ano: "",
-    placa: "",
-    cor: "",
-    proprietario: "",
-    matricula: "",
-    status: "",
-  });
-  const [marcas, setMarcas] = useState([]);
-  const [modelos, setModelos] = useState([]);
-  const [anos, setAnos] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [veiculoJSON, setVeiculoJSON] = useState({});
-  const navigate = useNavigate();
+  const { veiculo, setVeiculo } = useContext(NovoVeiculoContext);
+  const [placaIsOk, setPlacaIsOk] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const handleChange = (e) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setShowLogoutModal(false);
+  };
+
+  const handleChangeVeiculo = (e) => {
     const { name, value } = e.target;
     setVeiculo((prev) => ({ ...prev, [name]: value }));
   };
 
-  const fetchDadosDinamicos = async (tipo) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const marcasData = await APIFIPE.getMarcas(tipo);
-      setMarcas(marcasData);
-      setModelos([]);
-      setAnos([]);
-      if (veiculo.marca) {
-        const modelosData = await APIFIPE.getModelos(tipo, veiculo.marca);
-        const anosData = await APIFIPE.getAnos(tipo, veiculo.marca, veiculo.modelo);
-        setModelos(modelosData);
-        setAnos(anosData);
-      }
-    } catch (err) {
-      setError(`Erro ao carregar os dados: ${err.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handlePlacaCorreta = (e) => {
+    const { name, value } = e.target;
+    const placa = value.toUpperCase();
 
-  useEffect(() => {
-    if (veiculo.tipo) {
-      fetchDadosDinamicos(veiculo.tipo);
-    }
-  }, [veiculo.tipo, veiculo.marca, veiculo.modelo]);
+    const padraoMercosul = /^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$/;
+    const padraoAntiga = /^[A-Z]{3}-?[0-9]{4}$/;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    const campos = ["tipo", "marca", "modelo", "ano", "placa", "cor", "proprietario", "matricula", "status"];
-    const camposPreenchidos = campos.every((campo) => veiculoJSON[campo]);
-    if (camposPreenchidos) {
-      try {
-        let resultado = [];
-        try {
-          resultado = await MOCKAPI.getVeiculoPorPlaca(veiculoJSON.placa);
-        } catch (err) {
-          if (err.response?.status !== 404) {
-            console.error("Erro inesperado ao buscar placa:", err);
-            toast.error(`Erro ao buscar placa: ${err.message}`);
-            setLoading(false);
-            return;
-          }
-        }
-        if (resultado.length > 0) {
-          toast.error("Placa já cadastrada no sistema.");
-          setLoading(false);
-          return;
-        }
-        await MOCKAPI.postVeiculo(veiculoJSON);
-        toast.success(`Veículo \"${veiculoJSON.placa}\" adicionado com sucesso.`);
-        navigate("/buscarveiculo");
-      } catch (err) {
-        console.error("Erro ao enviar os dados:", err);
-        toast.error(`Erro ao enviar os dados: ${err.message}`);
-      } finally {
-        setLoading(false);
-      }
+    if (padraoAntiga.test(placa)) {
+      setVeiculo((prev) => ({ ...prev, tipoPlaca: "Antiga", placa }));
+      setPlacaIsOk(true);
+    } else if (padraoMercosul.test(placa)) {
+      setVeiculo((prev) => ({ ...prev, tipoPlaca: "Mercosul", placa }));
+      setPlacaIsOk(true);
     } else {
-      toast.error("Por favor, preencha todos os campos.");
-      setLoading(false);
+      setVeiculo((prev) => ({ ...prev, tipoPlaca: "Inválida", placa }));
+      setPlacaIsOk(false);
     }
   };
 
-  const atualizarVeiculo = (chave, event) => {
-    const textoSelecionado = event.target.options[event.target.selectedIndex].text;
-    setVeiculoJSON((prev) => ({ ...prev, [chave]: textoSelecionado }));
+  const formatMessage = (message) => {
+    return message.split("\n").map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        <br />
+      </React.Fragment>
+    ));
   };
+
+  const veiculoMessage = `
+Tipo: ${veiculo.tipo || "Não informado"}
+Marca: ${veiculo.marca || "Não informado"}
+Modelo: ${veiculo.modelo || "Não informado"}
+Ano: ${veiculo.ano || "Não informado"}
+Placa: ${veiculo.placa || "Não informado"}
+Cor: ${veiculo.cor || "Não informado"}
+Status: ${veiculo.status || "Não informado"}
+Tipo de Placa: ${veiculo.tipoPlaca || "Não informado"}
+Matrícula do Proprietário: ${veiculo.proprietario_matricula || "Não informado"}
+`;
 
   return (
     <>
-      <ToastContainer />
-      <h1 className="text-2xl font-bold mb-6">Adicionar Novo Veículo</h1>
-      <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto">
+      <h1 className="text-center text-2xl sm:text-3xl font-bold text-gray-800 mb-6 mt-4">
+        Adicione um veículo através das opções abaixo:
+      </h1>
+
+      <form onSubmit={handleSubmit} className="flex flex-col max-w-5xl mx-auto w-full px-4 sm:px-6 space-y-6">
         {/* Tipo */}
-        <div>
-          <label className="block font-medium mb-1">Tipo</label>
-          <select
-            name="tipo"
-            value={veiculo.tipo}
-            onChange={(e) => {
-              handleChange(e);
-              atualizarVeiculo("tipo", e);
-            }}
-            className="w-full border border-gray-300 rounded px-3 py-2"
+        <fieldset
+          className={`w-full border rounded-xl p-3 shadow-sm bg-white ${veiculo.tipo ? "border-green-800" : "border-gray-900"}`}
+        >
+          <legend
+            className={`text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md ${
+              veiculo.tipo ? "border-green-800 text-green-800" : "border-gray-900"
+            }`}
           >
-            <option value="">Selecione o tipo...</option>
-            <option value="1">Carro</option>
-            <option value="2">Moto</option>
-            <option value="3">Caminhão</option>
-          </select>
-        </div>
-        {/* Marca */}
-        <div>
-          <label className="block font-medium mb-1">Marca</label>
-          <select
-            name="marca"
-            value={veiculo.marca}
-            onChange={(e) => {
-              handleChange(e);
-              atualizarVeiculo("marca", e);
-            }}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            disabled={!marcas.length || loading}
+            Tipo
+          </legend>
+          <VeiculosTipo />
+        </fieldset>
+
+        {/* Marca, Modelo, Ano, Cor - mesma linha */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          {/* Marca */}
+          <fieldset
+            className={`flex-1 border rounded-xl p-3 shadow-sm bg-white ${
+              veiculo.marca ? "border-green-800" : "border-gray-900"
+            }`}
           >
-            <option value="">Selecione a marca...</option>
-            {loading ? (
-              <option>Carregando...</option>
-            ) : (
-              marcas.map((m) => (
-                <option key={m.Value} value={m.Value}>
-                  {m.Label}
-                </option>
-              ))
-            )}
-          </select>
-        </div>
-        {/* Modelo */}
-        <div>
-          <label className="block font-medium mb-1">Modelo</label>
-          <select
-            name="modelo"
-            value={veiculo.modelo}
-            onChange={(e) => {
-              handleChange(e);
-              atualizarVeiculo("modelo", e);
-            }}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            disabled={!modelos.length || loading}
+            <legend
+              className={`text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md ${
+                veiculo.marca ? "border-green-800 text-green-800" : "border-gray-900"
+              }`}
+            >
+              Marca
+            </legend>
+            <VeiculosMarca />
+          </fieldset>
+
+          {/* Modelo */}
+          <fieldset
+            className={`flex-1 border rounded-xl p-3 shadow-sm bg-white ${
+              veiculo.modelo ? "border-green-800" : "border-gray-900"
+            }`}
           >
-            <option value="">Selecione o modelo...</option>
-            {loading ? (
-              <option>Carregando...</option>
-            ) : (
-              modelos.map((m) => (
-                <option key={m.Value} value={m.Value}>
-                  {m.Label}
-                </option>
-              ))
-            )}
-          </select>
-        </div>
-        {/* Ano */}
-        <div>
-          <label className="block font-medium mb-1">Ano</label>
-          <select
-            name="ano"
-            value={veiculo.ano}
-            onChange={(e) => {
-              handleChange(e);
-              atualizarVeiculo("ano", e);
-            }}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            disabled={!anos.length || loading}
+            <legend
+              className={`text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md ${
+                veiculo.modelo ? "border-green-800 text-green-800" : "border-gray-900"
+              }`}
+            >
+              Modelo
+            </legend>
+            <VeiculosModelo />
+          </fieldset>
+
+          {/* Ano */}
+          <fieldset
+            className={`flex-1 border rounded-xl p-3 shadow-sm bg-white ${veiculo.ano ? "border-green-800" : "border-gray-900"}`}
           >
-            <option value="">Selecione o ano...</option>
-            {loading ? (
-              <option>Carregando...</option>
-            ) : (
-              anos.map((a) => (
-                <option key={a.Value} value={a.Value}>
-                  {a.Label}
-                </option>
-              ))
-            )}
-          </select>
+            <legend
+              className={`text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md ${
+                veiculo.ano ? "border-green-800 text-green-800" : "border-gray-900"
+              }`}
+            >
+              Ano
+            </legend>
+            <VeiculosAno />
+          </fieldset>
+
+          {/* Cor */}
+          <fieldset
+            className={`flex-1 border rounded-xl p-3 shadow-sm bg-white ${veiculo.cor ? "border-green-800" : "border-gray-900"}`}
+          >
+            <legend
+              className={`text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md ${
+                veiculo.cor ? "border-green-800 text-green-800" : "border-gray-900"
+              }`}
+            >
+              Cor
+            </legend>
+            <VeiculosCor />
+          </fieldset>
         </div>
+
         {/* Placa */}
-        <div>
-          <label className="block font-medium mb-1">Placa</label>
-          <input
-            type="text"
-            name="placa"
-            value={veiculo.placa}
-            onChange={(e) => {
-              handleChange(e);
-              setVeiculoJSON((v) => ({ ...v, placa: e.target.value }));
+        <fieldset
+          className={`w-full h-full border rounded-xl p-4 shadow-sm bg-white ${
+            veiculo.cor ? "border-green-800" : "border-gray-900"
+          }`}
+        >
+          <legend
+            className={`text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md ${
+              veiculo.tipoPlaca ? "border-green-800 text-green-800" : "border-gray-900"
+            }`}
+          >
+            Placa
+          </legend>
+
+          <div className="flex-row sm:flex">
+            {/* Lado esquerdo - Formulário */}
+            <div className="flex flex-col items-center justify-center w-full">
+              <input
+                type="text"
+                name="placa"
+                id="placa"
+                placeholder="Informe uma placa"
+                className={`text-center border border-sm rounded-sm h-10 p-3 font-bold ${
+                  placaIsOk ? "text-green-700" : "text-red-600"
+                }`}
+                value={veiculo.placa}
+                onChange={(e) => {
+                  handleChangeVeiculo(e);
+                  handlePlacaCorreta(e);
+                }}
+              />
+
+              {veiculo.tipoPlaca === "Antiga" && (
+                <div className="flex flex-col gap-4 mt-4 w-full">
+                  <div>
+                    <p>Estado:</p>
+                    <Select
+                      options={estadosBrasileiros}
+                      onChange={(opcao) => {
+                        setVeiculo((prev) => ({ ...prev, estado: opcao.value }));
+                      }}
+                      name="estado"
+                      className="w-full"
+                      classNamePrefix="react-select"
+                      placeholder="Selecione um estado..."
+                    />
+                  </div>
+
+                  <div>
+                    <p>Cidade:</p>
+                    <input
+                      type="text"
+                      name="cidade"
+                      id="cidade"
+                      placeholder="Informe uma cidade..."
+                      className={`text-center border border-sm rounded-sm h-10 p-3 font-bold w-full ${
+                        placaIsOk ? "text-green-700" : "text-red-600"
+                      }`}
+                      value={veiculo.cidade}
+                      onChange={handleChangeVeiculo}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Lado direito - Imagem da placa */}
+            <div className="flex items-center justify-center w-full mt-4">
+              {veiculo.tipoPlaca === "Mercosul" && <PlacaMercosul />}
+              {veiculo.tipoPlaca === "Antiga" && <PlacaAntiga />}
+            </div>
+          </div>
+        </fieldset>
+
+        {/* Botão de enviar */}
+        <div className="flex justify-center items-center mb-6">
+          <button
+            type="button"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 w-full sm:w-1/3 rounded-md transition-colors"
+            onClick={() => {
+              setShowLogoutModal(true);
             }}
-            className="w-full border border-gray-300 rounded px-3 py-2"
+          >
+            Salvar Veículo
+          </button>
+
+          <ConfirmModal
+            isOpen={showLogoutModal}
+            title="Confirme os dados"
+            message={<>Realizar cadastro? {formatMessage(veiculoMessage)}</>}
+            onConfirm={null}
+            onCancel={() => setShowLogoutModal(false)}
           />
         </div>
-        {/* Cor */}
-        <div>
-          <label className="block font-medium mb-1">Cor</label>
-          <input
-            type="text"
-            name="cor"
-            value={veiculo.cor}
-            onChange={(e) => {
-              handleChange(e);
-              setVeiculoJSON((v) => ({ ...v, cor: e.target.value }));
-            }}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-          />
-        </div>
-        {/* Proprietário */}
-        <div>
-          <label className="block font-medium mb-1">Proprietário</label>
-          <input
-            type="text"
-            name="proprietario"
-            value={veiculo.proprietario}
-            onChange={(e) => {
-              handleChange(e);
-              setVeiculoJSON((v) => ({ ...v, proprietario: e.target.value }));
-            }}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-          />
-        </div>
-        {/* Matrícula */}
-        <div>
-          <label className="block font-medium mb-1">Matrícula</label>
-          <input
-            type="text"
-            name="matricula"
-            value={veiculo.matricula}
-            onChange={(e) => {
-              handleChange(e);
-              setVeiculoJSON((v) => ({ ...v, matricula: e.target.value }));
-            }}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-          />
-        </div>
-        {/* Status */}
-        <div>
-          <label className="block font-medium mb-1">Status</label>
-          <input
-            type="text"
-            name="status"
-            value={veiculo.status}
-            onChange={(e) => {
-              handleChange(e);
-              setVeiculoJSON((v) => ({ ...v, status: e.target.value }));
-            }}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-          />
-        </div>
-        <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded w-full">
-          Salvar Veículo
-        </button>
       </form>
     </>
   );

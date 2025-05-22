@@ -1,7 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 
-
 // Importação dos middlewares
 import authMiddleware from "../middlewares/authMiddleware.js";
 import emailValidationMiddleware from "../middlewares/auth/emailValidationMiddleware.js";
@@ -20,11 +19,20 @@ dotenv.config();
 const router = express.Router();
 
 // 🔓 Rotas abertas (não exigem token)
-router.post("/createUserWithEmailAndPassword", emailValidationMiddleware, passwordValidationMiddleware, createUserWithEmailAndPasswordController);
+router.post(
+  "/createUserWithEmailAndPassword",
+  emailValidationMiddleware,
+  passwordValidationMiddleware,
+  createUserWithEmailAndPasswordController
+);
 router.post("/newpassword", emailValidationMiddleware, sendPasswordResetController);
-router.post("/signInWithEmailAndPassword", emailValidationMiddleware, passwordValidationMiddleware, signInWithEmailAndPasswordController);
+router.post(
+  "/signInWithEmailAndPassword",
+  emailValidationMiddleware,
+  passwordValidationMiddleware,
+  signInWithEmailAndPasswordController
+);
 router.post("/confirmPasswordReset", confirmPasswordResetController);
-
 
 router.use(authMiddleware); // tudo abaixo daqui vai exigir token
 // 🔒 Rotas protegidas (exigem autenticação válida)

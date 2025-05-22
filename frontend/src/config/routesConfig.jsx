@@ -17,8 +17,9 @@ import Veiculos from "../pages/veiculos/Veiculos.jsx";
 import NovoVeiculo from "../pages/veiculos/NovoVeiculo.jsx";
 import ConsultarVeiculos from "../pages/veiculos/ConsultarVeiculos.jsx";
 
-import Teste from "../components/Teste.jsx";
+import Teste from "../pages/teste/Teste.jsx";
 import { Navigate } from "react-router-dom";
+import { NovoVeiculoProvider } from "../contexts/NovoVeiculoContext.jsx";
 
 // Rotas públicas
 export const publicRoutes = [
@@ -38,7 +39,14 @@ export const protectedRoutes = [
   { path: "/perfil", element: <Perfil /> },
   { path: "/veiculos", element: <Veiculos /> },
   { path: "/veiculos/consultar", element: <ConsultarVeiculos /> },
-  { path: "/veiculos/cadastrar", element: <NovoVeiculo /> },
+  {
+    path: "/veiculos/cadastrar",
+    element: (
+      <NovoVeiculoProvider>
+        <NovoVeiculo />
+      </NovoVeiculoProvider>
+    ),
+  },
   { path: "/proprietarios", element: <Proprietarios /> },
   { path: "/proprietarios/consultar", element: <ConsultarProprietarios /> },
   { path: "/proprietarios/cadastrar", element: <NovoProprietario /> },

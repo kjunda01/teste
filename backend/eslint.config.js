@@ -17,7 +17,6 @@ export default defineConfig({
     "no-undef": "error",
     eqeqeq: ["error", "always"],
     curly: ["error", "all"],
-    "no-console": "warn",
     "no-empty": ["error", { allowEmptyCatch: true }],
     "no-multi-spaces": "error",
     "no-return-await": "error",

@@ -30,7 +30,7 @@ const UltimoVeiculo = () => {
     return (
       <div
         className={` border-4 ${corFundo} rounded-lg overflow-hidden shadow-md flex flex-col h-28 sm:h-32`}
-        style={{ fontFamily: "'FE Engschrift', sans-serif" }}
+        style={{ fontFamily: "FE Engschrift" }}
       >
         {/* Faixa azul com nome do modelo e bandeira */}
         <div className="bg-blue-700 text-white text-xs sm:text-sm font-bold flex items-center justify-between px-2 py-1 relative">
@@ -44,8 +44,8 @@ const UltimoVeiculo = () => {
 
         {/* Placa */}
         <div
-          className={`text-black text-lg sm:text-2xl font-bold  text-center flex-grow flex items-center justify-center ${corBarra}`}
-          style={{ letterSpacing: "0.2em" }}
+          className={`text-black text-3xl sm:text-5xl  text-center flex-grow flex items-center justify-center ${corBarra}`}
+          style={{ fontFamily: "FE Engschrift" }}
         >
           {placa}
         </div>
