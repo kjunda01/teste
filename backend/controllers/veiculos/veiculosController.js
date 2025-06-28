@@ -1,5 +1,4 @@
 import createError from "http-errors";
-import { successResponse } from "../../utils/response.js";
 import { veiculosService } from "../../services/veiculos/veiculosService.js";
 
 const getAll = async (req, res, next) => {
