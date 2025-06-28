@@ -1,4 +1,4 @@
-import connection from "../../config/db.js";
+import connection from "../../configs/db.js";
 
 const tabelaPermitida = ["proprietarios", "veiculos"];
 const tabela = "proprietarios";

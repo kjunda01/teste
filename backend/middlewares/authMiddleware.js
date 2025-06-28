@@ -1,4 +1,4 @@
-import admin from "../config/firebaseAdmin.js";
+import admin from "../configs/firebaseAdmin.js";
 
 async function authMiddleware(req, res, next) {
   const authorizationHeader = req.headers.authorization;

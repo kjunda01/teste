@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import connection from "../../config/db.js";
+import connection from "../../configs/db.js";
 
 const tabela = "veiculos";
 
