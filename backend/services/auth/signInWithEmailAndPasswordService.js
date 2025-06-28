@@ -1,5 +1,5 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../config/firebaseClient.js";
+import { auth } from "../../configs/firebaseClient.js";
 
 const signInWithEmailAndPasswordService = async (email, password) => {
   try {

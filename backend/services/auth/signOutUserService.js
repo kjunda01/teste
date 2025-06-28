@@ -1,4 +1,4 @@
-import { auth } from "../../config/firebaseClient.js";
+import { auth } from "../../configs/firebaseClient.js";
 import { signOut } from "firebase/auth";
 
 const signOutUserService = async () => {

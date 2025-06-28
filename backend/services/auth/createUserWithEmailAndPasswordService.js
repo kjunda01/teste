@@ -1,6 +1,6 @@
 // src/services/auth/createUserWithEmailAndPasswordService.js
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../config/firebaseClient.js";
+import { auth } from "../../configs/firebaseClient.js";
 
 const createUserWithEmailAndPasswordService = async (email, password) => {
   try {

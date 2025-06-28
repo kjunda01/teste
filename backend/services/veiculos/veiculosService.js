@@ -1,4 +1,4 @@
-import connection from "../../config/db.js";
+import connection from "../../configs/db.js";
 import { formatVeiculoValuesWithId, formatVeiculoValues } from "../../utils/formatVeiculoValues.js";
 
 const tabela = "veiculos";

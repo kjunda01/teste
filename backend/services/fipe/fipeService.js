@@ -1,7 +1,6 @@
 import axios from "axios";
 import dotenv from "dotenv";
-import { fipeAPI } from "../../config/fipeConfig.js";
-dotenv.config();
+import { fipeAPI } from "../../configs/fipeConfig.js";
 
 //const URL_CONSULTAR_MARCAS = "https://veiculos.fipe.org.br/api/veiculos///ConsultarMarcas";
 // Tem que passar "codigoTipoVeiculo" - Vai de 1 a 3

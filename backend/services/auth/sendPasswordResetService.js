@@ -1,5 +1,5 @@
-import { auth } from "../../config/firebaseClient.js"; // client para envio do email
-import admin from "../../config/firebaseAdmin.js"; // admin para checar usuário
+import { auth } from "../../configs/firebaseClient.js"; // client para envio do email
+import admin from "../../configs/firebaseAdmin.js"; // admin para checar usuário
 import { sendPasswordResetEmail } from "firebase/auth";
 
 const sendPasswordResetService = async (email) => {

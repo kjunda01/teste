@@ -1,4 +1,4 @@
-import connection from "../../config/db.js";
+import connection from "../../configs/db.js";
 import { formatProprietarioValuesWithId, formatProprietarioValues } from "../../utils/formatProprietarioValues.js";
 
 const tabela = "proprietarios";
