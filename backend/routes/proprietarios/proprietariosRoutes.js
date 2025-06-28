@@ -1,8 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
+
 import { proprietariosController } from "../../controllers/proprietarios/proprietariosController.js";
 import { proprietariosMiddleware } from "../../middlewares/proprietarios/proprietariosMiddleware.js";
-
 dotenv.config();
 
 const proprietariosRoutes = express.Router();
