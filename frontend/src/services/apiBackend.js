@@ -53,6 +53,20 @@ const deleteVeiculo = async (placa) =>
   await axios.delete(`${backendUrl}/db/veiculos/${placa}`);
 
 
+// ÚLTIMOS VEÍCULOS
+const getUltimosVeiculos = async () =>
+  await axios.get(`${backendUrl}/db/ultimosveiculos`);
+
+const getUltimosVeiculosPorTermo = async (termo) =>
+  await axios.get(`${backendUrl}/db/ultimosveiculos/busca`, { params: { q: termo } });
+
+const addUltimoVeiculo = async (veiculo) =>
+  await axios.post(`${backendUrl}/db/ultimosveiculos`, veiculo);
+
+const deleteUltimoVeiculo = async (placa) =>
+  await axios.delete(`${backendUrl}/db/ultimosveiculos/${placa}`);
+
+
 export const apiBackend = {
   getCidades,
   getCidadesPorTermo,
@@ -69,4 +83,8 @@ export const apiBackend = {
   addVeiculo,
   updateVeiculo,
   deleteVeiculo,
+  getUltimosVeiculos,
+  getUltimosVeiculosPorTermo,
+  addUltimoVeiculo,
+  deleteUltimoVeiculo,
 };
