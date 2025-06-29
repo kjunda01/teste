@@ -26,8 +26,8 @@ const EditarVeiculoModal = ({ isOpen, title, veiculo, onSave, onCancel }) => {
   useEffect(() => {
     const carregarMarcas = async () => {
       if (!form.tipo) return;
-      const { data } = await apiBackend.getFipeMarcas(form.tipo);
-      setMarcas(data.data.map((m) => ({ label: m.Label, value: m.Value })));
+      const marcasConvertidas = await apiBackend.getFipeMarcas(form.tipo);
+      setMarcas(marcasConvertidas);
     };
     carregarMarcas();
   }, [form.tipo]);
@@ -35,8 +35,8 @@ const EditarVeiculoModal = ({ isOpen, title, veiculo, onSave, onCancel }) => {
   useEffect(() => {
     const carregarModelos = async () => {
       if (!form.tipo || !form.marca) return;
-      const { data } = await apiBackend.getFipeModelos(form.tipo, form.marca);
-      setModelos(data.data.map((m) => ({ label: m.Label, value: m.Value })));
+      const modelosConvertidos = await apiBackend.getFipeModelos(form.tipo, form.marca);
+      setModelos(modelosConvertidos);
     };
     carregarModelos();
   }, [form.marca]);
@@ -44,8 +44,8 @@ const EditarVeiculoModal = ({ isOpen, title, veiculo, onSave, onCancel }) => {
   useEffect(() => {
     const carregarAnos = async () => {
       if (!form.tipo || !form.marca || !form.modelo) return;
-      const { data } = await apiBackend.getFipeAnos(form.tipo, form.marca, form.modelo);
-      setAnos(data.data.map((a) => ({ label: a.Label, value: a.Value })));
+      const anosConvertidos = await apiBackend.getFipeAnos(form.tipo, form.marca, form.modelo);
+      setAnos(anosConvertidos);
     };
     carregarAnos();
   }, [form.modelo]);
