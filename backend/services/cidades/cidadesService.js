@@ -1,6 +1,6 @@
 import bancoDeDados from "../../configs/db.js";
 
-const view = "vw_cidades_estados";
+const view = "vw_cidades_estados_async_select";
 
 // READ ALL VIEW
 const readAllView = async () => {
@@ -12,7 +12,7 @@ const readAllView = async () => {
 const buscarPorTermo = async (termo) => {
   const query = `
    SELECT value, label
-   FROM vw_cidades_async_select
+   FROM ${view}
    WHERE
      nome_busca ILIKE immutable_unaccent($1) OR
      sigla_busca ILIKE immutable_unaccent($1)
