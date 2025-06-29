@@ -1,15 +1,15 @@
-import { useContext, useState, useEffect, useRef } from "react";
+import { useContext, useState, useEffect, useRef, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { AuthContext } from "../../contexts/AuthContext";
-import { FaUserCircle, FaSignOutAlt, FaChevronDown, FaChevronRight, FaBars } from "react-icons/fa";
+import { FaSignOutAlt, FaChevronDown, FaChevronRight, FaBars } from "react-icons/fa";
 import { menuItems } from "../../config/menuConfig";
 import { useMenu } from "../../contexts/MenuContext";
+import { AuthContext } from "../../contexts/AuthContext";
 import ConfirmModal from "../ConfirmModal";
 
 const MenuPrincipal = () => {
   const [openSubmenus, setOpenSubmenus] = useState({});
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const { user, signOut, loading } = useContext(AuthContext);
+  const { user, signOutUser } = useContext(AuthContext);
   const { menuOpen, toggleMenu, closeMenu } = useMenu();
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,13 +25,11 @@ const MenuPrincipal = () => {
     }));
   };
 
-  const handleLogout = () => {
-    setShowLogoutModal(true);
-  };
+  const handleLogout = () => setShowLogoutModal(true);
 
   const confirmLogout = () => {
     setShowLogoutModal(false);
-    signOut();
+    signOutUser();
   };
 
   const handleProfileRedirect = () => {
@@ -39,7 +37,6 @@ const MenuPrincipal = () => {
     closeMenu();
   };
 
-  // Fecha o menu ao clicar fora e com a tecla Esc
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -70,59 +67,55 @@ const MenuPrincipal = () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [menuOpen]);
+  }, [menuOpen, closeMenu]);
 
-  const renderMenuItems = (items) =>
+  const buildMenu = (items) =>
     items.map((item, idx) => {
       const isActive = pathname === item.path;
-      const hasChildren = item.children && item.children.length > 0;
-      const isSubmenuActive = item.children && item.children.some((subItem) => pathname.includes(subItem.path));
-      const isOpen = openSubmenus[item.label] || isSubmenuActive;
+      const hasChildren = Array.isArray(item.children) && item.children.length > 0;
+
+      const isSubmenuActive = (node) => node.children?.some((child) => pathname.startsWith(child.path) || isSubmenuActive(child));
+
+      const isOpen = openSubmenus[item.label] || isSubmenuActive(item);
 
       return (
         <div key={idx} className="w-full">
-          <button
-            onClick={() => (hasChildren ? toggleSubmenu(item.label) : null)}
-            className={`w-full flex items-center justify-between px-4 py-2 rounded hover:bg-gray-700 ${
-              isActive ? "bg-gray-700 font-semibold" : ""
-            }`}
-          >
-            <Link to={item.path} className="flex items-center gap-2 w-full">
-              {item.icon}
-              {item.label}
-            </Link>
+          <div className="flex items-center justify-between px-4 py-2 w-full rounded hover:bg-yellow-700 hover:italic">
+            {hasChildren ? (
+              <button
+                onClick={() => toggleSubmenu(item.label)}
+                aria-expanded={isOpen}
+                className="flex items-center gap-2 w-full text-left cursor-pointer"
+              >
+                {item.icon}
+                {item.label}
+              </button>
+            ) : (
+              <Link
+                to={item.path}
+                onClick={() => closeMenu()}
+                className={`flex items-center gap-2 w-full ${isActive ? "bg-yellow-700 font-semibold rounded-sm" : ""}`}
+              >
+                {item.icon}
+                {item.label}
+              </Link>
+            )}
             {hasChildren &&
               (isOpen ? (
                 <FaChevronDown className="text-sm text-gray-400" />
               ) : (
                 <FaChevronRight className="text-sm text-gray-400" />
               ))}
-          </button>
-
-          {/* Submenu */}
-          {hasChildren && isOpen && (
-            <div className="pl-6">
-              {item.children.map((subItem, subIdx) => (
-                <Link
-                  key={subIdx}
-                  to={subItem.path}
-                  className={`flex items-center gap-2 px-4 py-2 text-sm rounded hover:bg-gray-700 ${
-                    pathname === subItem.path ? "bg-gray-700 font-semibold" : ""
-                  }`}
-                >
-                  {subItem.icon}
-                  {subItem.label}
-                </Link>
-              ))}
-            </div>
-          )}
+          </div>
+          {hasChildren && isOpen && <div className="pl-6">{buildMenu(item.children)}</div>}
         </div>
       );
     });
 
+  const menuContent = useMemo(() => buildMenu(menuItems), [menuItems, openSubmenus, pathname]);
+
   return (
     <>
-      {/* Botão flutuante */}
       <button
         ref={buttonRef}
         onClick={toggleMenu}
@@ -132,30 +125,32 @@ const MenuPrincipal = () => {
         <FaBars size={24} />
       </button>
 
-      {/* Menu lateral com animação */}
       <aside
         ref={menuRef}
-        className={`fixed top-0 left-0 h-full w-64 bg-gray-800 text-white flex flex-col shadow-lg transform transition-transform duration-300 z-40 ${
+        className={`fixed top-0 left-0 h-screen bg-gray-800 text-white flex flex-col shadow-lg transform transition-transform duration-300 z-50 w-full max-w-xs sm:max-w-sm md:max-w-md ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex items-center justify-between gap-2 p-4 border-b border-gray-700">
           <div className="flex items-center gap-3 cursor-pointer" onClick={handleProfileRedirect}>
-            <FaUserCircle className="text-3xl text-white" />
+            <img src={user.picture} alt="Foto de perfil" className="w-10 rounded-full" />
             <div>
-              <p className="text-sm font-semibold">{user?.nome || "Usuário"}</p>
-              <p className="text-xs text-gray-400">{user?.email}</p>
+              <p className="text-sm font-semibold">{user?.name || "Usuário"}</p>
+              <p className="text-xs text-gray-400">{user?.email || ""}</p>
             </div>
           </div>
-          <button onClick={handleLogout} title="Sair" className="text-gray-400 hover:text-red-500 transition-colors">
+          <button
+            onClick={handleLogout}
+            title="Sair"
+            className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+          >
             <FaSignOutAlt size={18} />
           </button>
         </div>
 
-        <nav className="flex flex-col gap-2 p-4 flex-1 overflow-y-auto">{renderMenuItems(menuItems)}</nav>
+        <nav className="flex flex-col gap-2 p-4 flex-1 overflow-y-auto">{menuContent}</nav>
       </aside>
 
-      {/* Modal de confirmação */}
       <ConfirmModal
         isOpen={showLogoutModal}
         title="Deseja sair?"

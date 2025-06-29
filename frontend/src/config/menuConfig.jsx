@@ -1,27 +1,27 @@
-import { FaCarCrash, FaCamera, FaAddressCard, FaSortNumericDownAlt, FaSearch } from "react-icons/fa";
+import { FaHome, FaBong, FaCameraRetro, FaPeopleArrows, FaSearch, FaCertificate, FaCar } from "react-icons/fa";
 
 export const menuItems = [
-  { label: "Home", path: "/home", icon: <FaCarCrash /> },
-  { label: "Ao Vivo", path: "/aovivo", icon: <FaCamera /> },
-  { label: "Contato", path: "/contato", icon: <FaAddressCard /> },
-  { label: "Estatísticas", path: "/estatisticas", icon: <FaSortNumericDownAlt /> },
-  { label: "Teste", path: "/teste", icon: "xD " },
-  {
-    label: "Veículos",
-    path: "/veiculos",
-    icon: <FaCarCrash />,
-    children: [
-      { label: "Consultar", path: "/veiculos/consultar", icon: <FaSearch /> },
-      { label: "Cadastrar", path: "/veiculos/cadastrar", icon: <FaSearch /> },
-    ],
-  },
+  { label: "Página Inicial", path: "/home", icon: <FaHome /> },
+  { label: "Teste", path: "/teste", icon: <FaBong /> },
+  { label: "Ao Vivo", path: "/aovivo", icon: <FaCameraRetro /> },
+
   {
     label: "Proprietários",
     path: "/proprietarios",
-    icon: <FaCarCrash />,
+    icon: <FaPeopleArrows />,
     children: [
-      { label: "Consultar", path: "/proprietarios/consultar", icon: <FaSearch /> },
-      { label: "Cadastrar", path: "/proprietarios/cadastrar", icon: <FaSearch /> },
+      { label: "Consultar Proprietários", path: "/proprietarios/consultar", icon: <FaSearch /> },
+      { label: "Novo Proprietário", path: "/proprietarios/cadastrar", icon: <FaCertificate /> },
+    ],
+  },
+
+  {
+    label: "Veículos",
+    path: "/veiculos",
+    icon: <FaCar />,
+    children: [
+      { label: "Consultar Veículos", path: "/veiculos/consultar", icon: <FaSearch /> },
+      { label: "Novo Veículo", path: "/veiculos/cadastrar", icon: <FaCertificate /> },
     ],
   },
 ];
