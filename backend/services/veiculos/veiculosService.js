@@ -10,18 +10,21 @@ const create = async (veiculo) => {
     INSERT INTO ${tabela} (ano, cor, marca, matricula, modelo, placa, tipo, status)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
   `;
+
   const result = await bancoDeDados.query(query, [
-    veiculo.ano,
-    veiculo.cor,
-    veiculo.marca,
-    veiculo.matricula,
-    veiculo.modelo,
-    veiculo.placa,
-    veiculo.tipo,
-    veiculo.status,
+    veiculo.ano ?? null,
+    veiculo.cor ?? null,
+    veiculo.marca ?? null,
+    veiculo.proprietario_matricula ?? null,
+    veiculo.modelo ?? null,
+    veiculo.placa ?? null,
+    veiculo.tipo ?? null,
+    veiculo.status ?? null,
   ]);
+
   return result.rowCount === 1;
 };
+
 
 // READ ALL TABELA
 const readAllTabela = async () => {
