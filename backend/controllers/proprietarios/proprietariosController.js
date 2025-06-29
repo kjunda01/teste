@@ -98,14 +98,16 @@ const buscarPorTermo = async (req, res, next) => {
 // UPDATE
 const update = async (req, res, next) => {
   try {
-    const resultado = await proprietariosService.update(req.body);
+    const { matricula } = req.params;
+    const { nome } = req.body;
+    const resultado = await proprietariosService.update({ matricula, nome });
     cacheService.flush();
     console.log(chalk.yellowBright("Requisição PUT"));
     console.log(chalk.yellowBright("[CACHE] Cache invalidado após PUT"));
-    if (!resultado || resultado.length === 0) {
+    if (!resultado) {
       throw createError(400, "Falha ao atualizar proprietário.");
     }
-    return res.status(200).json(resultado);
+    return res.status(200).json({ sucesso: true });
   } catch (error) {
     next(error);
   }

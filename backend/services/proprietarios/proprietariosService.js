@@ -2,7 +2,7 @@ import bancoDeDados from "../../configs/db.js";
 
 const tabela = "proprietarios";
 const view = "vw_proprietarios";
-const viewAsyncSelect = "vw_proprietarios_async_selec";
+const viewAsyncSelect = "vw_proprietarios_async_select";
 
 // CREATE
 const create = async (proprietario) => {
@@ -42,19 +42,19 @@ const readSingleView = async (matricula) => {
   return result.rows;
 };
 
-const update = async (proprietario) => {
+const update = async ({ matricula, nome }) => {
   const query = `
     UPDATE ${tabela}
-    SET matricula = $1, nome = $2
-    WHERE LOWER(matricula) = LOWER($1)
+    SET nome = $1
+    WHERE LOWER(matricula) = LOWER($2)
   `;
-  const result = await bancoDeDados.query(query, [proprietario.matricula, proprietario.nome]);
+  const result = await bancoDeDados.query(query, [nome, matricula]);
   return result.rowCount === 1;
 };
 
 // DELETE
 const remove = async (matricula) => {
-  const query = `DELETE * FROM ${tabela} WHERE LOWER(matricula) = LOWER($1)`;
+  const query = `DELETE FROM ${tabela} WHERE LOWER(matricula) = LOWER($1)`;
   const result = await bancoDeDados.query(query, [matricula]);
   return result.rowCount === 1;
 };

@@ -23,7 +23,7 @@ proprietariosRoutes.get(
 proprietariosRoutes.post("/", proprietariosController.create);
 
 // Rota para atualizar proprietario
-proprietariosRoutes.put("/", proprietariosController.update);
+proprietariosRoutes.put("/:matricula", proprietariosMiddleware.verificaMatricula, proprietariosController.update);
 
 // Rota para remover proprietario
 proprietariosRoutes.delete("/:matricula", proprietariosMiddleware.verificaMatricula, proprietariosController.remove);
