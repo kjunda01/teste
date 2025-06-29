@@ -1,98 +1,87 @@
-import connection from "../../configs/db.js";
-import { formatVeiculoValuesWithId, formatVeiculoValues } from "../../utils/formatVeiculoValues.js";
+import bancoDeDados from "../../configs/db.js";
 
 const tabela = "veiculos";
-const view = "view_veiculos_proprietarios";
+const view = "vw_veiculos";
 
-const getAll = async () => {
-  try {
-    const { rows } = await connection.query(`SELECT * FROM ${tabela}`);
-    return rows;
-  } catch (error) {
-    throw new Error("Erro ao buscar veículos.");
-  }
+// CREATE
+const create = async (veiculo) => {
+	const query = `
+    INSERT INTO ${tabela} (ano, cor, marca, matricula, modelo, placa, tipo, status)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+  `;
+	const result = await bancoDeDados.query(query, [
+		veiculo.ano,
+		veiculo.cor,
+		veiculo.marca,
+		veiculo.matricula,
+		veiculo.modelo,
+		veiculo.placa,
+		veiculo.tipo,
+		veiculo.status,
+	]);
+	return result.rowCount === 1;
+};
+
+// READ ALL TABELA
+const readAllTabela = async () => {
+	const query = `SELECT * FROM ${tabela}`;
+	const result = await bancoDeDados.query(query);
+	return result.rows;
+};
+
+// READ ALL VIEW
+const readAllView = async () => {
+	const query = `SELECT * FROM ${view}`;
+	const result = await bancoDeDados.query(query);
+	return result.rows;
+};
+
+// READ SINGLE TABELA
+const readSingleTabela = async (placa) => {
+	const query = `SELECT * FROM ${tabela} WHERE LOWER(placa) = LOWER($1)`;
+	const result = await bancoDeDados.query(query, [placa]);
+	return result.rows;
+};
+
+// READ SINGLE VIEW
+const readSingleView = async (placa) => {
+	const query = `SELECT * FROM ${view} WHERE LOWER(placa) = LOWER($1)`;
+	const result = await bancoDeDados.query(query, [placa]);
+	return result.rows;
 };
 
 const update = async (veiculo) => {
-  const values = formatVeiculoValuesWithId(veiculo);
-
-  try {
-    const { rowCount, rows } = await connection.query(
-      `UPDATE ${tabela} 
-       SET tipo = $1, marca = $2, modelo = $3, ano = $4, placa = $5, cor = $6, status = $7, matricula_proprietario = $8 , tipo_placa = $9
-       WHERE id = $10
-       RETURNING *`,
-      values
-    );
-
-    if (rowCount === 0) {
-      throw new Error("Veículo não encontrado.");
-    }
-
-    return rows[0];
-  } catch (error) {
-    throw new Error("Erro ao atualizar veículo.");
-  }
+	const query = `
+    UPDATE ${tabela}
+    SET ano = $1, cor = $2,  marca = $3,  matricula = $4,  modelo = $5,  tipo = $7,  status = $8,
+    WHERE LOWER(placa) = LOWER($6)
+  `;
+	const result = await bancoDeDados.query(query, [
+		veiculo.ano,
+		veiculo.cor,
+		veiculo.marca,
+		veiculo.matricula,
+		veiculo.modelo,
+		veiculo.placa,
+		veiculo.tipo,
+		veiculo.status,
+	]);
+	return result.rowCount === 1;
 };
 
-const create = async (veiculo) => {
-  const values = formatVeiculoValues(veiculo);
-
-  try {
-    const { rows } = await connection.query(
-      `INSERT INTO ${tabela}
-         (tipo, marca, modelo, ano, placa, cor, status, matricula_proprietario, tipo_placa)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
-         RETURNING *`,
-      values
-    );
-
-    return rows[0];
-  } catch (error) {
-    throw new Error("Erro ao criar veículo.");
-  }
-};
-
-const remove = async (id) => {
-  try {
-    const { rows, rowCount } = await connection.query(
-      `DELETE FROM ${tabela}
-       WHERE ID = $1 RETURNING *`,
-      [id]
-    );
-
-    if (rowCount === 0) {
-      throw new Error("Veículo não encontrado.");
-    }
-
-    return rows[0];
-  } catch (error) {
-    throw new Error("Erro ao deletar veículo.");
-  }
-};
-
-const getSingle = async (id) => {
-  try {
-    const { rows, rowCount } = await connection.query(
-      `SELECT * FROM ${tabela}
-       WHERE id = $1`,
-      [id]
-    );
-
-    if (rowCount === 0) {
-      throw new Error("Veículo não encontrado.");
-    }
-
-    return rows[0];
-  } catch (error) {
-    throw new Error("Erro ao buscar veículo.");
-  }
+// DELETE
+const remove = async (placa) => {
+	const query = `DELETE * FROM ${tabela} WHERE LOWER(placa) = LOWER($1)`;
+	const result = await bancoDeDados.query(query, [placa]);
+	return result.rowCount === 1;
 };
 
 export const veiculosService = {
-  getAll,
-  create,
-  update,
-  getSingle,
-  remove,
+	create,
+	readAllTabela,
+	readAllView,
+	readSingleTabela,
+	readSingleView,
+	update,
+	remove,
 };

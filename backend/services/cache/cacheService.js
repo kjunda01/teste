@@ -8,8 +8,8 @@ const del = (key) => cache.del(key);
 const flush = () => cache.flushAll();
 
 export const cacheService = {
-  get,
-  set,
-  del,
-  flush,
+	get,
+	set,
+	del,
+	flush,
 };

@@ -1,61 +1,26 @@
+import bancoDeDados from "../../configs/db.js";
 import createError from "http-errors";
-import connection from "../../configs/db.js";
+import { isValidParam } from "../../utils/isValidParam.js";
 
-const tabela = "veiculos";
+const verificaPlaca = async (req, res, next) => {
+	try {
+		const { placa } = req.params;
 
-// Verificar se o veículo existe pelo ID (para métodos como UPDATE ou GET)
-const existsById = async (req, res, next) => {
-  const { id } = req.params;
+		if (!isValidParam(placa)) {
+			throw createError(400, "PLACA inválida ou ausente.");
+		}
 
-  try {
-    const { rows } = await connection.query(`SELECT * FROM ${tabela} WHERE id = $1`, [id]);
+		const query = "SELECT * FROM veiculos WHERE LOWER(placa) = LOWER($1)";
+		const { rows } = await bancoDeDados.query(query, [placa]);
 
-    if (rows.length === 0) {
-      return next(createError(404, "Veículo não encontrado."));
-    }
+		if (rows.length === 0) {
+			throw createError(404, "PLACA não encontrada na base de dados.");
+		}
 
-    // Veículo encontrado → pode prosseguir
-    next();
-  } catch (error) {
-    return next(createError(500, "Erro ao verificar veículo por ID.", { cause: error }));
-  }
+		next();
+	} catch (err) {
+		next(err);
+	}
 };
 
-// Verificar se a placa do veículo já existe (usado para criação)
-const existsByPlaca = async (req, res, next) => {
-  const { placa } = req.body;
-
-  try {
-    const { rows } = await connection.query(`SELECT * FROM ${tabela} WHERE placa = $1`, [placa]);
-
-    if (rows.length > 0) {
-      return next(createError(409, "Placa já cadastrada no sistema."));
-    }
-
-    // Placa não encontrada → pode prosseguir
-    next();
-  } catch (error) {
-    return next(createError(500, "Erro ao verificar duplicação de placa.", { cause: error }));
-  }
-};
-
-// Verificar se a placa do veículo é válida (modelo mercosul ou normal)
-const placaIsValid = async (req, res, next) => {
-  const { placa } = req.body;
-  const regex = /^[A-Z]{3}(\d[A-Z]\d{2}|\d{4})$/i;
-  const teste = regex.test(placa);
-  try {
-    if (!teste) {
-      return next(createError(404, "Placa inválida/formato diferente."));
-    }
-    next();
-  } catch (error) {
-    return next(createError(500, "Erro ao verificar duplicação de placa.", { cause: error }));
-  }
-};
-
-export const veiculosMiddleware = {
-  existsById,
-  existsByPlaca,
-  placaIsValid,
-};
+export const veiculosMiddleware = { verificaPlaca };

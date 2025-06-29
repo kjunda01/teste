@@ -1,62 +1,121 @@
+import chalk from "chalk";
 import createError from "http-errors";
+
+import { cacheService } from "../../services/cache/cacheService.js";
 import { veiculosService } from "../../services/veiculos/veiculosService.js";
 
-const getAll = async (req, res, next) => {
-  try {
-    const data = await veiculosService.getAll();
-    return successResponse(res, "Veículos listados com sucesso", data);
-  } catch (error) {
-    return next(createError(500, "Erro ao buscar veículos.", { cause: error }));
-  }
-};
-
-const getSingle = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const data = await veiculosService.getSingle(id);
-
-    if (!data) {
-      return next(createError(404, "Veículo não encontrado."));
-    }
-
-    return successResponse(res, "Veículo encontrado com sucesso", data);
-  } catch (error) {
-    return next(createError(500, "Erro interno no servidor.", { cause: error }));
-  }
-};
-
 const create = async (req, res, next) => {
-  try {
-    const data = await veiculosService.create(req.body);
-    return successResponse(res, "Veículo criado com sucesso", data, 201);
-  } catch (error) {
-    return next(createError(400, "Falha ao criar veículo.", { cause: error }));
-  }
+	try {
+		const veiculo = req.body;
+		const resultado = await veiculosService.create(veiculo);
+		cacheService.flush();
+		console.log(chalk.yellowBright("Requisição POST"));
+		console.log(chalk.yellowBright("[CACHE] Cache invalidado após POST"));
+		if (!resultado || resultado.length === 0) {
+			throw createError(400, "Falha ao salvar veículo");
+		}
+		return res.status(200).json(resultado);
+	} catch (error) {
+		next(error);
+	}
+};
+
+const readAllTabela = async (req, res, next) => {
+	try {
+		const resultado = await veiculosService.readAllTabela();
+		console.log(chalk.yellowBright("Requisição GET"));
+
+		if (!resultado || resultado.length === 0) {
+			throw createError(404, "Falha ao encontrar veículos.");
+		}
+		return res.status(200).json(resultado);
+	} catch (error) {
+		next(error);
+	}
+};
+
+const readAllView = async (req, res, next) => {
+	try {
+		const resultado = await veiculosService.readAllView();
+		console.log(chalk.yellowBright("Requisição GET"));
+
+		if (!resultado || resultado.length === 0) {
+			throw createError(404, "Falha ao encontrar veículos.");
+		}
+		return res.status(200).json(resultado);
+	} catch (error) {
+		next(error);
+	}
+};
+
+const readSingleTabela = async (req, res, next) => {
+	try {
+		const { placa } = req.params;
+		const resultado = await veiculosService.readSingleTabela(placa);
+		console.log(chalk.yellowBright("Requisição GET"));
+
+		if (!resultado[0] || resultado[0].length === 0) {
+			throw createError(404, "Falha ao encontrar veículo específico.");
+		}
+		return res.status(200).json(resultado[0]);
+	} catch (error) {
+		next(error);
+	}
+};
+
+const readSingleView = async (req, res, next) => {
+	try {
+		const { placa } = req.params;
+		const resultado = await veiculosService.readSingleView(placa);
+		console.log(chalk.yellowBright("Requisição GET"));
+
+		if (!resultado[0] || resultado[0].length === 0) {
+			throw createError(404, "Falha ao encontrar veículo específico.");
+		}
+		return res.status(200).json(resultado[0]);
+	} catch (error) {
+		next(error);
+	}
 };
 
 const update = async (req, res, next) => {
-  try {
-    const data = await veiculosService.update(req.body);
-    return successResponse(res, "Veículo atualizado com sucesso", data);
-  } catch (error) {
-    return next(createError(400, "Falha ao atualizar veículo.", { cause: error }));
-  }
+	try {
+		const resultado = await veiculosService.update(req.body);
+		cacheService.flush();
+		console.log(chalk.yellowBright("Requisição PUT"));
+		console.log(chalk.yellowBright("[CACHE] Cache invalidado após PUT"));
+		if (!resultado || resultado.length === 0) {
+			throw createError(400, "Falha ao atualizar veículo.");
+		}
+		return res.status(200).json(resultado);
+	} catch (error) {
+		next(error);
+	}
 };
 
 const remove = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const data = await veiculosService.remove(id);
-    return successResponse(res, "Veículo removido com sucesso", data);
-  } catch (error) {
-    return next(createError(400, "Falha ao remover veículo.", { cause: error }));
-  }
+	try {
+		const { placa } = req.params;
+		const resultado = await veiculosService.remove(placa);
+		cacheService.flush();
+		console.log(chalk.yellowBright("Requisição DELETE"));
+		console.log(chalk.yellowBright("[CACHE] Cache invalidado após DELETE"));
+
+		if (!resultado || resultado.length === 0) {
+			throw createError(400, "Falha ao remover veículo");
+		}
+		return res.status(200).json(resultado);
+	} catch (error) {
+		next(error);
+	}
 };
 
 export const veiculosController = {
-  getAll,
-  getSingle,
-  create,
-  update,
-  remove,
+	create,
+	readAllTabela,
+	readAllView,
+	readSingleTabela,
+	readSingleView,
+	update,
+	remove,
 };

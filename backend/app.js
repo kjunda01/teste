@@ -72,10 +72,10 @@ import cookieParser from "cookie-parser";
 import corsOptions from "./configs/cors.js";
 import requestLogger from "./middlewares/log/logger.js";
 import fallbackRoutes from "./routes/fallbackRoutes.js";
+import helmet from "./configs/helmetConfig.js";
 import { fileURLToPath } from "url";
 import { errorHandler } from "./middlewares/error/errorHandler.js";
 import { routes } from "./routes/routes.js";
-import helmet from "./configs/helmetConfig.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -91,7 +91,7 @@ app.use(requestLogger);
 
 const rotas = routes;
 for (const [route, handler] of Object.entries(rotas)) {
-  app.use(route, handler);
+	app.use(route, handler);
 }
 
 app.use(errorHandler);
