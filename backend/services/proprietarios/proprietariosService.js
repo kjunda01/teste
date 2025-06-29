@@ -2,6 +2,7 @@ import bancoDeDados from "../../configs/db.js";
 
 const tabela = "proprietarios";
 const view = "vw_proprietarios";
+const viewAsyncSelect = "vw_proprietarios_async_selec";
 
 // CREATE
 const create = async (proprietario) => {
@@ -61,7 +62,7 @@ const remove = async (matricula) => {
 const buscarPorTermo = async (termo) => {
   const query = `
    SELECT value, label
-   FROM vw_proprietarios_async_select
+   FROM ${viewAsyncSelect}
    WHERE
      nome_busca ILIKE immutable_unaccent($1) OR
      matricula_busca ILIKE immutable_unaccent($1)
