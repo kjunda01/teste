@@ -79,6 +79,22 @@ const readSingleView = async (req, res, next) => {
   }
 };
 
+const buscarPorTermo = async (req, res, next) => {
+  try {
+    const { q } = req.query;
+
+    if (!q || q.length < 3) {
+      return res.status(400).json({ message: "Digite pelo menos 3 caracteres" });
+    }
+
+    const resultado = await proprietariosService.buscarPorTermo(q);
+
+    return res.status(200).json(resultado);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // UPDATE
 const update = async (req, res, next) => {
   try {
@@ -119,6 +135,7 @@ export const proprietariosController = {
   readAllView,
   readSingleTabela,
   readSingleView,
+  buscarPorTermo,
   update,
   remove,
 };

@@ -1,30 +1,29 @@
-import connection from "../../configs/db.js";
+import bancoDeDados from "../../configs/db.js";
+import createError from "http-errors";
+import { isValidParam } from "../../utils/isValidParam.js";
 
-const tabelaPermitida = ["proprietarios", "veiculos"];
 const tabela = "proprietarios";
+const view = "vw_proprietarios_async_select";
 
-const exists = async (req, res, next) => {
-  const { matricula } = req.body;
-
-  if (!tabelaPermitida.includes(tabela)) {
-    throw new Error("Tabela inválida");
-  }
-
+const verificaMatricula = async (req, res, next) => {
   try {
-    const { rows } = await connection.query(`SELECT * FROM ${tabela} WHERE matricula = $1`, [matricula]);
+    const { matricula } = req.params;
 
-    if (!rows) {
-      return res.status(404).json({ error: "Proprietário não encontrado na base de dados" });
+    if (!isValidParam(matricula)) {
+      throw createError(400, "MATRÍCULA inválida ou ausente.");
     }
 
-    // Proprietário existe → prossegue
+    const query = `SELECT * FROM ${tabela} WHERE matricula = $1`;
+    const { rows } = await bancoDeDados.query(query, [matricula]);
+
+    if (rows.length === 0) {
+      throw createError(404, "MATRÍCULA não encontrada na base de dados.");
+    }
+
     next();
-  } catch (error) {
-    console.error("Erro ao verificar proprietário:", error);
-    return res.status(500).json({ error: "Erro interno no servidor." });
+  } catch (err) {
+    next(err);
   }
 };
 
-export const proprietariosMiddleware = {
-  exists,
-};
+export const proprietariosMiddleware = { verificaMatricula };
