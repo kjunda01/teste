@@ -9,9 +9,9 @@ import cidadesRoutes from "./cidades/cidadesRoutes.js";
 export const routes = {
   "/api/auth": authRoutes,
   "/fipe": fipeRoutes,
-  "/db/veiculos": veiculosRoutes,
-  "/db/proprietarios": proprietariosRoutes,
   "/db/cidades": cidadesRoutes,
-  "/db/hora": tempoRoutes, // Teste de conexão com o banco
+  "/db/tempo": tempoRoutes, // Teste de conexão com o banco
+  "/db/proprietarios": proprietariosRoutes,
+  "/db/veiculos": veiculosRoutes,
   "/": fallbackRoutes, // Fallback para rotas não-API
 };

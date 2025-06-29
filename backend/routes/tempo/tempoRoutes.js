@@ -1,11 +1,11 @@
-import connection from "../../configs/db.js";
+import bancoDeDados from "../../configs/db.js";
 
-const testeRoutes = async (req, res) => {
+const tempoRoutes = async (req, res) => {
   try {
     // Executando uma consulta simples para pegar a hora atual do banco
-    const result = await connection.query("SELECT NOW()");
+    const result = await bancoDeDados.query("SELECT NOW()");
     res.json({
-      hora: result.rows[0].now,
+      tempo: result.rows[0].now,
     });
   } catch (err) {
     console.error("Erro ao conectar ao banco:", err);
@@ -13,4 +13,4 @@ const testeRoutes = async (req, res) => {
   }
 };
 
-export default testeRoutes;
+export default tempoRoutes;
