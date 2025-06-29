@@ -1,24 +1,28 @@
-import createHttpError from "http-errors";
+import createError from "http-errors";
 import logger from "./logger.js";
 
-const isProd = process.env.NODE_ENV === "production";
+const isDev = process.env.NODE_ENV === "development";
 
-const allowedOrigins = isProd
-  ? ["https://frontend-teste-olive.vercel.app", "https://unipark-gamma.vercel.app", "https://backend-teste-two.vercel.app"]
-  : process.env.CORS_URLS?.split(",").map((url) => url.trim()) || [];
+const allowedOrigins = process.env.CORS_URLS?.split(",").map((url) => url.trim()) || [];
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Permite sem verificação em dev ou sem origin (ex: Postman)
+    if (isDev || !origin) {
       return callback(null, true);
     }
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
     logger.warn(`CORS bloqueado para origem: ${origin}`);
-    callback(createHttpError(403, "CORS bloqueado para esta origem"));
+    callback(createError(403, "CORS bloqueado para esta origem"));
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
-
 console.log("🌐 CORS_URLS carregado:", allowedOrigins);
+
 export default corsOptions;
