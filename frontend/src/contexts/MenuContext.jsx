@@ -1,5 +1,4 @@
-// src/contexts/MenuContext.jsx
-import React, { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 const MenuContext = createContext();
 
@@ -18,7 +17,7 @@ export const MenuProvider = ({ children }) => {
 export const useMenu = () => {
   const context = useContext(MenuContext);
   if (!context) {
-    throw new Error("useMenu must be used within a MenuProvider");
+    throw new Error("useMenu deve ser usado dentro de um MenuProvider");
   }
   return context;
 };
