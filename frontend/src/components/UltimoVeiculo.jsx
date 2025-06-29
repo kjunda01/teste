@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import ComponentLoader from "./ComponentLoader";
+import { apiBackend } from "../services/apiBackend.js";
 
 const UltimoVeiculo = () => {
   const [veiculos, setVeiculos] = useState([]);
@@ -10,7 +10,7 @@ const UltimoVeiculo = () => {
     const getUltimoVeiculo = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("https://6727abed270bd0b9755344ee.mockapi.io/api/veiculos");
+        const response = await apiBackend.getUltimosVeiculos();
         setVeiculos(response.data);
       } catch (error) {
         console.error("Erro ao buscar veículos:", error);
@@ -23,9 +23,9 @@ const UltimoVeiculo = () => {
   }, []);
 
   const renderPlacaMercosul = (placa, modelo, status) => {
-    const isPermitido = status === "Permitido";
-    const corFundo = isPermitido ? "bg-green-100 border-green-500" : "bg-red-100 border-red-500";
-    const corBarra = isPermitido ? "bg-green-700" : "bg-red-700";
+    const isAtivo = status === "Ativo";
+    const corFundo = isAtivo ? "bg-green-100 border-green-500" : "bg-red-100 border-red-500";
+    const corBarra = isAtivo ? "bg-green-700" : "bg-red-700";
 
     return (
       <div
