@@ -18,7 +18,7 @@ veiculosRoutes.get("/:placa", veiculosMiddleware.verificaPlaca, cacheMiddleware,
 veiculosRoutes.post("/", veiculosController.create);
 
 // Rota para atualizar veículo
-veiculosRoutes.put("/", veiculosMiddleware.verificaPlaca, veiculosController.update);
+veiculosRoutes.put("/:placa", veiculosMiddleware.verificaPlaca, veiculosController.update);
 
 // Rota para remover veículo
 veiculosRoutes.delete("/:placa", veiculosMiddleware.verificaPlaca, veiculosController.remove);

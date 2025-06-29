@@ -95,13 +95,18 @@ const buscarPorTermo = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
-    const resultado = await veiculosService.update(req.body);
+    const placa = req.params.placa;
+    const dados = req.body;
+    const resultado = await veiculosService.update({ ...dados, placa });
+
     cacheService.flush();
     console.log(chalk.yellowBright("Requisição PUT"));
     console.log(chalk.yellowBright("[CACHE] Cache invalidado após PUT"));
+
     if (!resultado) {
       throw createError(400, "Falha ao atualizar veículo.");
     }
+
     return res.status(200).json({ sucesso: true });
   } catch (error) {
     next(error);
