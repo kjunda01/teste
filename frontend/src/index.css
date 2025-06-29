@@ -1,1 +1,91 @@
 @import "tailwindcss";
+
+@font-face {
+  font-family: "Arial";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/arial.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Arial Bold";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/arialbd.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Arial Italic";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/ariali.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Arial Bold Italic";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/arialbi.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "FE Engschrift";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/fe-engschrift.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/Helvetica.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Helvetica Bold";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/Helvetica-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Helvetica Bold Oblique";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/Helvetica-BoldOblique.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Helvetica Oblique";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/Helvetica-Oblique.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Mandatory";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/Mandatory.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Times";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/times.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Times Bold";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/timesbd.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Times Italic";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/timesi.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Times Bold Italic";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/timesbi.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Verdana";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/verdana.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Verdana Bold";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/verdanab.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Verdana Italic";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/verdanai.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Verdana Bold Italic";
+  src: url("https://cdn.jsdelivr.net/gh/kjunda01/fontes@master/verdanaz.ttf") format("truetype");
+}
