@@ -23,5 +23,6 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
+console.log("🌐 CORS_URLS carregado:", allowedOrigins);
 
 export default corsOptions;
