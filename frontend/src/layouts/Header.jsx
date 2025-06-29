@@ -1,23 +1,15 @@
-import { useContext, useEffect, useState, useCallback } from "react";
-import { FaUser } from "react-icons/fa";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../contexts/AuthContext";
 import { toast } from "react-toastify";
 import HoraAtual from "../components/HoraAtual";
 import MenuPrincipal from "../components/menu/MenuPrincipal";
 import ConfirmModal from "../components/ConfirmModal";
+import { AuthContext } from "../contexts/AuthContext";
 
 const Header = () => {
-  const { user, signOut, loading } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const [userData, setUserData] = useState(null);
+  const { signOutUser } = useContext(AuthContext);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-
-  useEffect(() => {
-    if (!loading && user) {
-      setUserData(user);
-    }
-  }, [loading, user]);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     setShowLogoutModal(true);
@@ -26,42 +18,32 @@ const Header = () => {
   const confirmLogout = async () => {
     setShowLogoutModal(false);
     try {
-      const { success, error } = await signOut();
-      if (success) {
-        toast.success("Volte sempre!");
-        navigate("/");
-      } else {
-        toast.error(error);
-      }
+      await signOutUser();
+      navigate("/");
     } catch (error) {
       toast.error(error.message || "Erro ao deslogar.");
     }
   };
 
   return (
-    <header className="bg-gray-800 text-blue-900 h-16 flex justify-between items-center p-4 relative z-[100]">
-      <nav className="flex justify-between w-full">
+    <header className="bg-gray-800 text-blue-900 h-16 md:h-20 flex items-center px-4 relative z-[100]">
+      <nav className="flex flex-col md:flex-row justify-between items-center w-full gap-2 md:gap-0">
         {/* Menu Principal */}
-        <div className="flex flex-row items-center justify-center">
+        <div className="flex items-center justify-between w-full md:w-auto">
           <MenuPrincipal />
         </div>
 
-        <div>
-          <ul>
-            <li className="cursor-pointer transition-all text-white rounded flex flex-row items-center justify-center gap-4">
-              <Link to="/home">
+        <div className="w-full md:w-auto">
+          <ul className="flex flex-col md:flex-row gap-2 md:gap-4 items-center justify-end">
+            <li className="flex items-center gap-4 text-white rounded ml-auto">
+              {/* Hora: visível só a partir do md */}
+              <Link to="/home" className="hidden md:block">
                 <HoraAtual />
               </Link>
-              <Link
-                to="/perfil"
-                className="flex items-center gap-2 text-white hover:bg-yellow-400 px-2 py-1 rounded transition-all"
-              >
-                <FaUser />
-                {user?.email}
-              </Link>
 
+              {/* Botão de logout menor e mais discreto */}
               <button
-                className="bg-red-700 hover:bg-red-800 text-white font-semibold py-2 px-4 rounded cursor-pointer"
+                className="bg-red-700 hover:bg-red-800 text-white font-medium py-1 px-2 text-sm rounded"
                 type="button"
                 onClick={handleLogout}
               >
@@ -71,6 +53,7 @@ const Header = () => {
           </ul>
         </div>
       </nav>
+
       <ConfirmModal
         isOpen={showLogoutModal}
         title="Deseja sair?"

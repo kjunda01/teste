@@ -1,29 +1,20 @@
 import React, { useState } from "react";
 import Header from "./Header";
+import Footer from "./Footer";
 
 const Wrapper = ({ children }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div
-      className={`min-h-screen max-h-screen min-w-screen max-w-screen flex flex-col bg-gray-100 transition-all duration-300 ${
-        menuOpen ? "pl-64" : "pl-0"
-      }`}
-    >
-      {/* Passa o estado do menu para o Header */}
+    <div className="flex flex-col min-h-screen">
+      {/* Cabeçalho */}
       <Header menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      {/* Conteúdo principal e footer */}
-      <div className="flex-1 flex flex-col">
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child) && child.type !== Header) {
-            return child;
-          }
-          return null;
-        })}
-      </div>
+      {/* Conteúdo */}
+      <main className="flex-1 w-full flex flex-col overflow-y-auto min-h-0 transition-all duration-500">{children}</main>
 
-      {/* Overlay para mobile */}
+      {/* Rodapé */}
+      <Footer />
       {menuOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={() => setMenuOpen(false)} />}
     </div>
   );
