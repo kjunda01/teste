@@ -1,29 +1,25 @@
 import axios from "axios";
-import dotenv from "dotenv";
 import { fipeAPI } from "../../configs/fipeConfig.js";
 
-//const URL_CONSULTAR_MARCAS = "https://veiculos.fipe.org.br/api/veiculos///ConsultarMarcas";
+//const URL_CONSULTAR_MARCAS = "https://veiculos.fipe.org.br/api/veiculos/ConsultarMarcas";
 // Tem que passar "codigoTipoVeiculo" - Vai de 1 a 3
-// Tem que passar "codigoTabelaReferencia" - 320 é maio de 2025
+// Tem que passar "codigoTabelaReferencia" - 321 é junho de 2025
 
-//const URL_CONSULTAR_MODELOS = "https://veiculos.fipe.org.br/api/veiculos//ConsultarModelos";
+//const URL_CONSULTAR_MODELOS = "https://veiculos.fipe.org.br/api/veiculos/ConsultarModelos";
 // Tem que passar "codigoTipoVeiculo" - Vai de 1 a 3
-// Tem que passar "codigoTabelaReferencia" - 320 é maio de 2025
+// Tem que passar "codigoTabelaReferencia" - 321 é junho de 2025
 // Tem que passar "codigoMarca" - Código referente a marca específica
 
-//const URL_CONSULTAR_ANOS = "https://veiculos.fipe.org.br/api/veiculos//ConsultarAnoModelo";
+//const URL_CONSULTAR_ANOS = "https://veiculos.fipe.org.br/api/veiculos/ConsultarAnoModelo";
 // Tem que passar "codigoTipoVeiculo" - Vai de 1 a 3
-// Tem que passar "codigoTabelaReferencia" - 320 é maio de 2025
+// Tem que passar "codigoTabelaReferencia" - 321 é junho de 2025
 // Tem que passar "codigoMarca" - Código referente a marca específica
 // Tem que passar "codigoModelo" - Codigo do modelo específico
 
 // ##################################
 // ALTERAR AQUI PARA O MES DE REFERENCIA
 // ##################################
-const codigoTabela = 320;
-// ##################################
-// ALTERAR AQUI PARA O MES DE REFERENCIA
-// ##################################
+const codigoTabela = 321;
 
 // CONSEGUIR OS DADOS REFERENTES AS MARCAS - 1 ETAPA
 const obterMarcas = async (codigoTipoVeiculo, codigoTabelaReferencia = codigoTabela) => {
