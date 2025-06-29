@@ -1,5 +1,7 @@
+import { Outlet } from "react-router-dom";
+
 const Proprietarios = () => {
-  return <h1>Proprietarios</h1>;
+  return <Outlet />;
 };
 
 export default Proprietarios;
