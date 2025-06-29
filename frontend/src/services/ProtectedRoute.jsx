@@ -1,20 +1,23 @@
 import { useContext } from "react";
-import { AuthContext } from "../contexts/AuthContext";
 import { Navigate, Outlet } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext.jsx";
 import LoadingCircle from "../components/LoadingCircle.jsx";
 
 const ProtectedRoute = () => {
   const { user, loading } = useContext(AuthContext);
 
+  // Enquanto carrega...
   if (loading) {
-    return <LoadingCircle />;
+    return <LoadingCircle message="Entrando..." />;
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
+  // Se usuário válido, libera
+  if (user) {
+    return <Outlet />;
   }
 
-  return <Outlet />;
+  // Caso contrário, redireciona
+  return <Navigate to="/" replace />;
 };
 
 export default ProtectedRoute;
