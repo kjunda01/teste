@@ -8,6 +8,9 @@ const veiculosRoutes = express.Router();
 // Rota para pegar todos os veículos
 veiculosRoutes.get("/", cacheMiddleware, veiculosController.readAllView);
 
+// Rota para fazer busca no banco
+veiculosRoutes.get("/busca", cacheMiddleware, veiculosController.buscarPorTermo);
+
 // Rota para pegar um único veículo
 veiculosRoutes.get("/:placa", veiculosMiddleware.verificaPlaca, cacheMiddleware, veiculosController.readSingleView);
 

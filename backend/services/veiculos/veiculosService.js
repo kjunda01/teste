@@ -1,7 +1,8 @@
 import bancoDeDados from "../../configs/db.js";
 
 const tabela = "veiculos";
-const view = "vw_veiculos";
+const view = "vw_veiculos"
+const viewAsyncSelect = "vw_veiculos_async_select";
 
 // CREATE
 const create = async (veiculo) => {
@@ -53,8 +54,14 @@ const readSingleView = async (placa) => {
 const update = async (veiculo) => {
   const query = `
     UPDATE ${tabela}
-    SET ano = $1, cor = $2,  marca = $3,  matricula = $4,  modelo = $5,  tipo = $7,  status = $8,
-    WHERE LOWER(placa) = LOWER($6)
+    SET ano = $1,
+        cor = $2,
+        marca = $3,
+        matricula = $4,
+        modelo = $5,
+        tipo = $6,
+        status = $7
+    WHERE LOWER(placa) = LOWER($8)
   `;
   const result = await bancoDeDados.query(query, [
     veiculo.ano,
@@ -62,18 +69,35 @@ const update = async (veiculo) => {
     veiculo.marca,
     veiculo.matricula,
     veiculo.modelo,
-    veiculo.placa,
     veiculo.tipo,
     veiculo.status,
+    veiculo.placa,
   ]);
   return result.rowCount === 1;
 };
 
 // DELETE
 const remove = async (placa) => {
-  const query = `DELETE * FROM ${tabela} WHERE LOWER(placa) = LOWER($1)`;
+  const query = `DELETE FROM ${tabela} WHERE LOWER(placa) = LOWER($1)`;
   const result = await bancoDeDados.query(query, [placa]);
   return result.rowCount === 1;
+};
+
+const buscarPorTermo = async (termo) => {
+  const query = `
+    SELECT value, label
+    FROM ${viewAsyncSelect}
+    WHERE
+      placa_busca ILIKE immutable_unaccent($1) OR
+      modelo_busca ILIKE immutable_unaccent($1) OR
+      cor_busca ILIKE immutable_unaccent($1) OR
+      status_busca ILIKE immutable_unaccent($1) OR
+      proprietario_busca ILIKE immutable_unaccent($1)
+    ORDER BY label
+    LIMIT 20;
+  `;
+  const { rows } = await bancoDeDados.query(query, [`%${termo}%`]);
+  return rows;
 };
 
 export const veiculosService = {
@@ -82,6 +106,7 @@ export const veiculosService = {
   readAllView,
   readSingleTabela,
   readSingleView,
+  buscarPorTermo,
   update,
   remove,
 };
