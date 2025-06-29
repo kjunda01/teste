@@ -5,6 +5,7 @@ import { MdRefresh } from "react-icons/md";
 import { apiBackend } from "../../services/apiBackend";
 import ConfirmModal from "../../components/ConfirmModal";
 import EditarVeiculoModal from "./EditarVeiculoModal";
+import LoadingCircle from "../../components/LoadingCircle.jsx";
 
 const ConsultarVeiculos = () => {
   const [termoBusca, setTermoBusca] = useState("");
@@ -109,7 +110,7 @@ const ConsultarVeiculos = () => {
       </div>
 
       {loading ? (
-        <p>Carregando...</p>
+        <LoadingCircle />
       ) : veiculos.length > 0 ? (
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
