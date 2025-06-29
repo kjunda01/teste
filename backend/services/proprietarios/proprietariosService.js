@@ -1,110 +1,69 @@
-import connection from "../../configs/db.js";
-import { formatProprietarioValuesWithId, formatProprietarioValues } from "../../utils/formatProprietarioValues.js";
+import bancoDeDados from "../../configs/db.js";
 
 const tabela = "proprietarios";
-const tabelaVeiculosPorProprietario = "view_veiculos_proprietarios";
+const view = "vw_proprietarios";
 
-const getAll = async () => {
-  try {
-    const { rows } = await connection.query(`SELECT * FROM ${tabela}`);
-    return rows;
-  } catch (error) {
-    throw new Error("Erro ao buscar proprietarios.");
-  }
+// CREATE
+const create = async (proprietario) => {
+  const query = `
+    INSERT INTO ${tabela} (matricula, nome)
+    VALUES ($1, $2)
+`;
+  const result = await bancoDeDados.query(query, [proprietario.matricula, proprietario.nome]);
+  return result.rowCount === 1;
 };
 
-const getVeiculosPorMatricula = async (matricula) => {
-  try {
-    const { rows } = await connection.query(`SELECT * FROM ${tabelaVeiculosPorProprietario} WHERE proprietario_matricula = $1`, [
-      matricula,
-    ]);
-    return rows;
-  } catch (error) {
-    throw new Error("Erro ao buscar veículos do proprietário.");
-  }
+// READ ALL TABELA
+const readAllTabela = async () => {
+  const query = `SELECT * FROM ${tabela}`;
+  const result = await bancoDeDados.query(query);
+  return result.rows;
+};
+
+// READ ALL VIEW
+const readAllView = async () => {
+  const query = `SELECT * FROM ${view}`;
+  const result = await bancoDeDados.query(query);
+  return result.rows;
+};
+
+// READ SINGLE TABELA
+const readSingleTabela = async (matricula) => {
+  const query = `SELECT * FROM ${tabela} WHERE LOWER(matricula) = LOWER($1)`;
+  const result = await bancoDeDados.query(query, [matricula]);
+  return result.rows;
+};
+
+// READ SINGLE VIEW
+const readSingleView = async (matricula) => {
+  const query = `SELECT * FROM ${view} WHERE LOWER(matricula) = LOWER($1)`;
+  const result = await bancoDeDados.query(query, [matricula]);
+  return result.rows;
 };
 
 const update = async (proprietario) => {
-  const values = formatProprietarioValuesWithId(proprietario);
-
-  try {
-    const { rowCount, rows } = await connection.query(
-      `UPDATE ${tabela} 
-       SET nome = $1, matricula = $2
-       WHERE id = $3
-       RETURNING *`,
-      values
-    );
-
-    if (rowCount === 0) {
-      throw new Error("Proprietário não encontrado.");
-    }
-
-    return rows[0];
-  } catch (error) {
-    throw new Error("Erro ao atualizar proprietário.");
-  }
+  const query = `
+    UPDATE ${tabela}
+    SET matricula = $1, nome = $2
+    WHERE LOWER(matricula) = LOWER($1)
+  `;
+  const result = await bancoDeDados.query(query, [proprietario.matricula, proprietario.nome]);
+  return result.rowCount === 1;
 };
 
-const create = async (proprietario) => {
-  const values = formatProprietarioValues(proprietario);
-
-  try {
-    const { rows } = await connection.query(
-      `INSERT INTO ${tabela}
-         (nome, matricula)
-         VALUES ($1, $2) 
-         RETURNING *`,
-      values
-    );
-
-    return rows[0];
-  } catch (error) {
-    throw new Error("Erro ao criar proprietário.");
-  }
-};
-
-const remove = async (id) => {
-  try {
-    const { rows, rowCount } = await connection.query(
-      `DELETE FROM ${tabela}
-       WHERE ID = $1 RETURNING *`,
-      [id]
-    );
-
-    if (rowCount === 0) {
-      throw new Error("Proprietário não encontrado.");
-    }
-
-    return rows[0];
-  } catch (error) {
-    throw new Error("Erro ao deletar proprietário.");
-  }
-};
-
-const getSingle = async (matricula) => {
-  try {
-    const { rows, rowCount } = await connection.query(
-      `SELECT * FROM ${tabela}
-       WHERE matricula = $1`,
-      [matricula]
-    );
-
-    if (rowCount === 0) {
-      throw new Error("Proprietário não encontrado.");
-    }
-
-    return rows[0];
-  } catch (error) {
-    throw new Error("Erro ao buscar proprietário.");
-  }
+// DELETE
+const remove = async (matricula) => {
+  const query = `DELETE * FROM ${tabela} WHERE LOWER(matricula) = LOWER($1)`;
+  const result = await bancoDeDados.query(query, [matricula]);
+  return result.rowCount === 1;
 };
 
 export const proprietariosService = {
-  getAll,
   create,
+  readAllTabela,
+  readAllView,
+  readSingleTabela,
+  readSingleView,
   update,
-  getSingle,
-  getVeiculosPorMatricula,
   remove,
 };

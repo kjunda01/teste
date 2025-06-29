@@ -1,79 +1,124 @@
 import createError from "http-errors";
-import { successResponse } from "../../utils/response.js";
+import chalk from "chalk";
 import { proprietariosService } from "../../services/proprietarios/proprietariosService.js";
+import { cacheService } from "../../services/cache/cacheService.js";
 
-const getAll = async (req, res, next) => {
-  try {
-    const data = await proprietariosService.getAll();
-    return successResponse(res, "Proprietários listados com sucesso", data);
-  } catch (error) {
-    return next(createError(500, "Erro ao buscar proprietários.", { cause: error }));
-  }
-};
-
-const getSingle = async (req, res, next) => {
-  try {
-    const { matricula } = req.params;
-    const data = await proprietariosService.getSingle(matricula);
-
-    if (!data) {
-      return next(createError(404, "Proprietário não encontrado."));
-    }
-
-    return successResponse(res, "Proprietário encontrado com sucesso", data);
-  } catch (error) {
-    return next(createError(500, "Erro interno no servidor.", { cause: error }));
-  }
-};
-
-const getVeiculosPorMatricula = async (req, res, next) => {
-  try {
-    const { matricula } = req.params;
-    const data = await proprietariosService.getVeiculosPorMatricula(matricula);
-
-    if (!data) {
-      return next(createError(404, "Veículos do proprietário não encontrados."));
-    }
-
-    return successResponse(res, "Veículos do proprietário encontrados com sucesso", data);
-  } catch (error) {
-    return next(createError(500, "Erro interno no servidor.", { cause: error }));
-  }
-};
-
+// CREATE
 const create = async (req, res, next) => {
   try {
-    const data = await proprietariosService.create(req.body);
-    return successResponse(res, "Proprietário criado com sucesso", data, 201);
+    const proprietario = req.body;
+    const resultado = await proprietariosService.create(proprietario);
+    cacheService.flush();
+    console.log(chalk.yellowBright("Requisição POST"));
+    console.log(chalk.yellowBright("[CACHE] Cache invalidado após POST"));
+    if (!resultado || resultado.length === 0) {
+      throw createError(400, "Falha ao criar proprietário");
+    }
+    return res.status(200).json(resultado);
   } catch (error) {
-    return next(createError(400, "Falha ao criar proprietário.", { cause: error }));
+    next(error);
   }
 };
 
+// READ
+const readAllTabela = async (req, res, next) => {
+  try {
+    const resultado = await proprietariosService.readAllTabela();
+    console.log(chalk.yellowBright("Requisição GET"));
+
+    if (!resultado || resultado.length === 0) {
+      throw createError(404, "Falha ao encontrar proprietarios.");
+    }
+    return res.status(200).json(resultado);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const readAllView = async (req, res, next) => {
+  try {
+    const resultado = await proprietariosService.readAllView();
+    console.log(chalk.yellowBright("Requisição GET"));
+
+    if (!resultado || resultado.length === 0) {
+      throw createError(404, "Falha ao encontrar proprietarios.");
+    }
+    return res.status(200).json(resultado);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const readSingleTabela = async (req, res, next) => {
+  try {
+    const { matricula } = req.params;
+    const resultado = await proprietariosService.readSingleTabela(matricula);
+    console.log(chalk.yellowBright("Requisição GET"));
+
+    if (!resultado[0] || resultado[0].length === 0) {
+      throw createError(404, "Falha ao encontrar proprietario específico.");
+    }
+    return res.status(200).json(resultado[0]);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const readSingleView = async (req, res, next) => {
+  try {
+    const { matricula } = req.params;
+    const resultado = await proprietariosService.readSingleView(matricula);
+    console.log(chalk.yellowBright("Requisição GET"));
+
+    if (!resultado[0] || resultado[0].length === 0) {
+      throw createError(404, "Falha ao encontrar proprietario específico.");
+    }
+    return res.status(200).json(resultado[0]);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// UPDATE
 const update = async (req, res, next) => {
   try {
-    const data = await proprietariosService.update(req.body);
-    return successResponse(res, "Proprietário atualizado com sucesso", data);
+    const resultado = await proprietariosService.update(req.body);
+    cacheService.flush();
+    console.log(chalk.yellowBright("Requisição PUT"));
+    console.log(chalk.yellowBright("[CACHE] Cache invalidado após PUT"));
+    if (!resultado || resultado.length === 0) {
+      throw createError(400, "Falha ao atualizar proprietário.");
+    }
+    return res.status(200).json(resultado);
   } catch (error) {
-    return next(createError(400, "Falha ao atualizar proprietário.", { cause: error }));
+    next(error);
   }
 };
 
+// DELETE
 const remove = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const data = await proprietariosService.remove(id);
-    return successResponse(res, "Proprietário removido com sucesso", data);
+    const { matricula } = req.params;
+    const resultado = await proprietariosService.remove(matricula);
+    cacheService.flush();
+    console.log(chalk.yellowBright("Requisição DELETE"));
+    console.log(chalk.yellowBright("[CACHE] Cache invalidado após DELETE"));
+
+    if (!resultado || resultado.length === 0) {
+      throw createError(400, "Falha ao remover proprietário.");
+    }
+    return res.status(200).json(resultado);
   } catch (error) {
-    return next(createError(400, "Falha ao remover proprietário.", { cause: error }));
+    next(error);
   }
 };
 
 export const proprietariosController = {
-  getAll,
-  getSingle,
-  getVeiculosPorMatricula,
   create,
+  readAllTabela,
+  readAllView,
+  readSingleTabela,
+  readSingleView,
   update,
   remove,
 };
