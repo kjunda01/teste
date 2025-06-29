@@ -6,6 +6,7 @@ import ultimosVeiculosRoutes from "./ultimosVeiculos/ultimosVeiculosRoutes.js";
 import tempoRoutes from "./tempo/tempoRoutes.js";
 import fallbackRoutes from "./fallbackRoutes.js";
 import cidadesRoutes from "./cidades/cidadesRoutes.js";
+import debugRoutes from "./debugRoutes.js";
 
 export const routes = {
   "/api/auth": authRoutes,
@@ -15,5 +16,6 @@ export const routes = {
   "/db/proprietarios": proprietariosRoutes,
   "/db/veiculos": veiculosRoutes,
   "/db/ultimosveiculos": ultimosVeiculosRoutes,
+  "/debug": debugRoutes,
   "/": fallbackRoutes, // Fallback para rotas não-API
 };
