@@ -1,57 +1,46 @@
-import { useContext, useEffect, useState } from "react";
-import Select from "react-select";
-import { NovoVeiculoContext } from "../../contexts/NovoVeiculoContext";
-import axios from "axios";
-import ComponentLoader from "../ComponentLoader";
+import AsyncSelect from "react-select/async";
+import { useNovoVeiculo } from "../../contexts/NovoVeiculoContext";
+import { apiBackend } from "../../services/apiBackend";
+import { useEffect, useState } from "react";
 
 const VeiculosModelo = () => {
-  const [modelos, setModelos] = useState([]);
-  const [isLoading, setIsLoading] = useState();
-  const { setVeiculo, tipoNumerico, marcaNumerica, setModeloNumerico } = useContext(NovoVeiculoContext);
+  const { veiculo, setVeiculo } = useNovoVeiculo();
+  const [opcoes, setOpcoes] = useState([]);
 
   useEffect(() => {
-    const getModelos = async () => {
+    const carregar = async () => {
+      if (!veiculo.tipo || !veiculo.marca) return;
+
       try {
-        setIsLoading(true);
-        const req = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/fipe/${tipoNumerico}/${marcaNumerica}`);
+        const marcas = await apiBackend.getFipeMarcas(veiculo.tipo);
+        const marcaSelecionada = marcas.find((m) => m.label === veiculo.marca);
+        if (!marcaSelecionada) return;
 
-        const modelosFormatados = req.data.data.map((marca) => ({
-          value: String(marca.Value),
-          label: marca.Label,
-        }));
-
-        setModelos(modelosFormatados);
-      } catch (error) {
-        const msg = "Erro inesperado.";
-        return msg;
-        // toast.error(msg);
-        // setErroDaApi(error);
-      } finally {
-        setIsLoading(false);
+        const modelos = await apiBackend.getFipeModelos(veiculo.tipo, marcaSelecionada.value);
+        setOpcoes(modelos);
+      } catch (err) {
+        console.error("Erro ao buscar modelos:", err);
+        setOpcoes([]);
       }
     };
-
-    if (marcaNumerica) getModelos();
-  }, [marcaNumerica]);
-
-  const handleChange = (opcaoSelecionada) => {
-    setVeiculo((prevState) => ({ ...prevState, modelo: opcaoSelecionada.label }));
-    setModeloNumerico(opcaoSelecionada.value);
-  };
+    carregar();
+  }, [veiculo.tipo, veiculo.marca]);
 
   return (
-    <div className="text-center font-sans p-3 w-max-full">
-      <ComponentLoader isLoading={isLoading}>
-        <Select
-          options={modelos}
-          onChange={handleChange}
-          name="marcas"
-          className="w-full"
-          classNamePrefix="react-select"
-          placeholder="Selecione um modelo..."
-        />
-      </ComponentLoader>
-    </div>
+    <AsyncSelect
+      cacheOptions
+      defaultOptions={opcoes}
+      loadOptions={() => Promise.resolve(opcoes)}
+      value={veiculo.modelo ? { label: veiculo.modelo, value: veiculo.modelo } : null}
+      onChange={(option) => {
+        setVeiculo((prev) => ({
+          ...prev,
+          modelo: option?.label || "",
+          ano: "",
+        }));
+      }}
+      placeholder="Selecione o modelo"
+    />
   );
 };
 

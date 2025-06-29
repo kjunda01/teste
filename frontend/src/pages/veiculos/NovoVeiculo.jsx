@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { NovoVeiculoContext } from "../../contexts/NovoVeiculoContext";
+
 import ConfirmModal from "../../components/ConfirmModal";
 import VeiculosTipo from "../../components/veiculos/VeiculosTipo";
 import VeiculosMarca from "../../components/veiculos/VeiculosMarca";
@@ -8,18 +9,14 @@ import VeiculosAno from "../../components/veiculos/VeiculosAno";
 import VeiculosCor from "../../components/veiculos/VeiculosCor";
 import PlacaAntiga from "../../components/veiculos/PlacaAntiga";
 import PlacaMercosul from "../../components/veiculos/PlacaMercosul";
-import Select from "react-select";
-import { estadosBrasileiros } from "../../utils/EstadosBrasileiros";
+import AsyncSelect from "react-select/async";
+import { toast } from "react-toastify";
+import { apiBackend } from "../../services/apiBackend";
 
 const PaginaNovoVeiculo = () => {
   const { veiculo, setVeiculo } = useContext(NovoVeiculoContext);
   const [placaIsOk, setPlacaIsOk] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setShowLogoutModal(false);
-  };
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleChangeVeiculo = (e) => {
     const { name, value } = e.target;
@@ -27,9 +24,7 @@ const PaginaNovoVeiculo = () => {
   };
 
   const handlePlacaCorreta = (e) => {
-    const { name, value } = e.target;
-    const placa = value.toUpperCase();
-
+    const placa = e.target.value.toUpperCase();
     const padraoMercosul = /^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$/;
     const padraoAntiga = /^[A-Z]{3}-?[0-9]{4}$/;
 
@@ -45,14 +40,13 @@ const PaginaNovoVeiculo = () => {
     }
   };
 
-  const formatMessage = (message) => {
-    return message.split("\n").map((line, index) => (
+  const formatMessage = (message) =>
+    message.split("\n").map((line, index) => (
       <React.Fragment key={index}>
         {line}
         <br />
       </React.Fragment>
     ));
-  };
 
   const veiculoMessage = `
 Tipo: ${veiculo.tipo || "Não informado"}
@@ -62,9 +56,61 @@ Ano: ${veiculo.ano || "Não informado"}
 Placa: ${veiculo.placa || "Não informado"}
 Cor: ${veiculo.cor || "Não informado"}
 Status: ${veiculo.status || "Não informado"}
-Tipo de Placa: ${veiculo.tipoPlaca || "Não informado"}
 Matrícula do Proprietário: ${veiculo.proprietario_matricula || "Não informado"}
+Cidade: ${veiculo.cidade || "Não informado"}
+Estado: ${veiculo.estado || "Não informado"}
 `;
+
+  const handleConfirm = async () => {
+    try {
+      const payload = {
+        tipo: veiculo.tipo,
+        marca: veiculo.marca,
+        modelo: veiculo.modelo,
+        ano: veiculo.ano,
+        cor: veiculo.cor,
+        placa: veiculo.placa,
+        status: veiculo.status,
+        proprietario_matricula: veiculo.proprietario_matricula,
+        cidade: veiculo.cidade,
+        estado: veiculo.estado,
+      };
+
+      await apiBackend.addVeiculo(payload);
+
+      toast.success("Veículo cadastrado com sucesso!");
+      setShowConfirmModal(false);
+
+      // Opcional: resetar formulário
+      setVeiculo({
+        tipo: "",
+        marca: "",
+        modelo: "",
+        ano: "",
+        cor: "",
+        placa: "",
+        status: "",
+        proprietario_matricula: "",
+        cidade: "",
+        estado: "",
+      });
+    } catch (error) {
+      console.error("Erro ao cadastrar veículo:", error);
+      toast.error("Erro ao cadastrar veículo.");
+    }
+  };
+
+  const buscarCidades = async (inputValue) => {
+    if (inputValue.length < 2) return [];
+    try {
+      const { data } = await apiBackend.getCidadesPorTermo(inputValue);
+      return data; // já está no formato [{ label, value }]
+    } catch (err) {
+      console.error("Erro ao buscar cidades:", err);
+      toast.error("Erro ao buscar cidades");
+      return [];
+    }
+  };
 
   return (
     <>
@@ -72,178 +118,156 @@ Matrícula do Proprietário: ${veiculo.proprietario_matricula || "Não informado
         Adicione um veículo através das opções abaixo:
       </h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col max-w-5xl mx-auto w-full px-4 sm:px-6 space-y-6">
-        {/* Tipo */}
-        <fieldset
-          className={`w-full border rounded-xl p-3 shadow-sm bg-white ${veiculo.tipo ? "border-green-800" : "border-gray-900"}`}
-        >
-          <legend
-            className={`text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md ${
-              veiculo.tipo ? "border-green-800 text-green-800" : "border-gray-900"
-            }`}
-          >
-            Tipo
-          </legend>
+      <form className="flex flex-col max-w-5xl mx-auto w-full px-4 sm:px-6 space-y-6">
+        <fieldset className={`border rounded-xl p-3 shadow-sm bg-white ${veiculo.tipo ? "border-green-800" : "border-gray-900"}`}>
+          <legend className="text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md">Tipo</legend>
           <VeiculosTipo />
         </fieldset>
 
-        {/* Marca, Modelo, Ano, Cor - mesma linha */}
         <div className="flex flex-col sm:flex-row gap-4">
-          {/* Marca */}
           <fieldset
-            className={`flex-1 border rounded-xl p-3 shadow-sm bg-white ${
+            className={`flex-1 border rounded-xl p-3 bg-white shadow-sm ${
               veiculo.marca ? "border-green-800" : "border-gray-900"
             }`}
           >
-            <legend
-              className={`text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md ${
-                veiculo.marca ? "border-green-800 text-green-800" : "border-gray-900"
-              }`}
-            >
-              Marca
-            </legend>
+            <legend className="text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md">Marca</legend>
             <VeiculosMarca />
           </fieldset>
 
-          {/* Modelo */}
           <fieldset
-            className={`flex-1 border rounded-xl p-3 shadow-sm bg-white ${
+            className={`flex-1 border rounded-xl p-3 bg-white shadow-sm ${
               veiculo.modelo ? "border-green-800" : "border-gray-900"
             }`}
           >
-            <legend
-              className={`text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md ${
-                veiculo.modelo ? "border-green-800 text-green-800" : "border-gray-900"
-              }`}
-            >
-              Modelo
-            </legend>
+            <legend className="text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md">Modelo</legend>
             <VeiculosModelo />
           </fieldset>
 
-          {/* Ano */}
           <fieldset
-            className={`flex-1 border rounded-xl p-3 shadow-sm bg-white ${veiculo.ano ? "border-green-800" : "border-gray-900"}`}
+            className={`flex-1 border rounded-xl p-3 bg-white shadow-sm ${veiculo.ano ? "border-green-800" : "border-gray-900"}`}
           >
-            <legend
-              className={`text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md ${
-                veiculo.ano ? "border-green-800 text-green-800" : "border-gray-900"
-              }`}
-            >
-              Ano
-            </legend>
+            <legend className="text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md">Ano</legend>
             <VeiculosAno />
           </fieldset>
 
-          {/* Cor */}
           <fieldset
-            className={`flex-1 border rounded-xl p-3 shadow-sm bg-white ${veiculo.cor ? "border-green-800" : "border-gray-900"}`}
+            className={`flex-1 border rounded-xl p-3 bg-white shadow-sm ${veiculo.cor ? "border-green-800" : "border-gray-900"}`}
           >
-            <legend
-              className={`text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md ${
-                veiculo.cor ? "border-green-800 text-green-800" : "border-gray-900"
-              }`}
-            >
-              Cor
-            </legend>
+            <legend className="text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md">Cor</legend>
             <VeiculosCor />
           </fieldset>
         </div>
 
-        {/* Placa */}
-        <fieldset
-          className={`w-full h-full border rounded-xl p-4 shadow-sm bg-white ${
-            veiculo.cor ? "border-green-800" : "border-gray-900"
-          }`}
-        >
-          <legend
-            className={`text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md ${
-              veiculo.tipoPlaca ? "border-green-800 text-green-800" : "border-gray-900"
-            }`}
-          >
-            Placa
-          </legend>
-
-          <div className="flex-row sm:flex">
-            {/* Lado esquerdo - Formulário */}
-            <div className="flex flex-col items-center justify-center w-full">
-              <input
-                type="text"
-                name="placa"
-                id="placa"
-                placeholder="Informe uma placa"
-                className={`text-center border border-sm rounded-sm h-10 p-3 font-bold ${
-                  placaIsOk ? "text-green-700" : "text-red-600"
-                }`}
-                value={veiculo.placa}
-                onChange={(e) => {
-                  handleChangeVeiculo(e);
-                  handlePlacaCorreta(e);
-                }}
-              />
-
-              {veiculo.tipoPlaca === "Antiga" && (
-                <div className="flex flex-col gap-4 mt-4 w-full">
-                  <div>
-                    <p>Estado:</p>
-                    <Select
-                      options={estadosBrasileiros}
-                      onChange={(opcao) => {
-                        setVeiculo((prev) => ({ ...prev, estado: opcao.value }));
-                      }}
-                      name="estado"
-                      className="w-full"
-                      classNamePrefix="react-select"
-                      placeholder="Selecione um estado..."
-                    />
-                  </div>
-
-                  <div>
-                    <p>Cidade:</p>
-                    <input
-                      type="text"
-                      name="cidade"
-                      id="cidade"
-                      placeholder="Informe uma cidade..."
-                      className={`text-center border border-sm rounded-sm h-10 p-3 font-bold w-full ${
-                        placaIsOk ? "text-green-700" : "text-red-600"
-                      }`}
-                      value={veiculo.cidade}
-                      onChange={handleChangeVeiculo}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Lado direito - Imagem da placa */}
-            <div className="flex items-center justify-center w-full mt-4">
-              {veiculo.tipoPlaca === "Mercosul" && <PlacaMercosul />}
-              {veiculo.tipoPlaca === "Antiga" && <PlacaAntiga />}
-            </div>
+        <fieldset className="w-full border rounded-xl p-4 shadow-sm bg-white">
+          <legend className="text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md">Placa</legend>
+          <input
+            type="text"
+            name="placa"
+            id="placa"
+            placeholder="Informe uma placa"
+            className={`text-center border rounded-sm h-10 p-3 font-bold w-full ${placaIsOk ? "text-green-700" : "text-red-600"}`}
+            value={veiculo.placa}
+            onChange={(e) => {
+              handleChangeVeiculo(e);
+              handlePlacaCorreta(e);
+            }}
+          />
+          <div className="mt-4 flex justify-center">
+            {veiculo.tipoPlaca === "Mercosul" && <PlacaMercosul />}
+            {veiculo.tipoPlaca === "Antiga" && <PlacaAntiga />}
           </div>
         </fieldset>
 
-        {/* Botão de enviar */}
-        <div className="flex justify-center items-center mb-6">
+        {veiculo.tipoPlaca === "Antiga" && (
+          <div className="flex flex-col gap-4">
+            <p className="text-sm text-gray-600">Cidade (opcional, apenas para visual):</p>
+            <AsyncSelect
+              cacheOptions
+              loadOptions={buscarCidades}
+              defaultOptions
+              placeholder="Digite o nome da cidade..."
+              onChange={(selected) => {
+                if (selected) {
+                  setVeiculo((prev) => ({
+                    ...prev,
+                    cidade: selected.value.nome,
+                    estado: selected.value.estado,
+                  }));
+                }
+              }}
+              className="text-sm"
+            />
+          </div>
+        )}
+
+        <fieldset className="w-full border rounded-xl p-4 shadow-sm bg-white">
+          <legend className="text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md">Proprietário</legend>
+          <AsyncSelect
+            cacheOptions
+            defaultOptions
+            loadOptions={async (inputValue) => {
+              if (!inputValue || inputValue.length < 2) return [];
+              try {
+                const { data } = await apiBackend.getProprietariosPorTermo(inputValue);
+                return data;
+              } catch (err) {
+                toast.error("Erro ao buscar proprietários");
+                return [];
+              }
+            }}
+            placeholder="Digite o nome ou matrícula do proprietário..."
+            onChange={(selected) => {
+              if (selected) {
+                setVeiculo((prev) => ({
+                  ...prev,
+                  proprietario_matricula: selected.value.matricula,
+                }));
+              }
+            }}
+            value={
+              veiculo.proprietario_matricula
+                ? {
+                    label: `${veiculo.proprietario_matricula}`,
+                    value: { matricula: veiculo.proprietario_matricula },
+                  }
+                : null
+            }
+          />
+        </fieldset>
+
+        <fieldset className="w-full border rounded-xl p-4 shadow-sm bg-white">
+          <legend className="text-lg font-semibold px-3 py-1 bg-gray-100 border rounded-md">Status</legend>
+          <select
+            name="status"
+            value={veiculo.status || ""}
+            onChange={handleChangeVeiculo}
+            className="w-full h-10 px-4 rounded border"
+          >
+            <option value="">Selecione o status</option>
+            <option value="ATIVO">ATIVO</option>
+            <option value="PROIBIDO">PROIBIDO</option>
+            <option value="INDEFINIDO">INDEFINIDO</option>
+          </select>
+        </fieldset>
+
+        <div className="flex justify-center mb-6">
           <button
             type="button"
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 w-full sm:w-1/3 rounded-md transition-colors"
-            onClick={() => {
-              setShowLogoutModal(true);
-            }}
+            onClick={() => setShowConfirmModal(true)}
+            disabled={!placaIsOk}
           >
             Salvar Veículo
           </button>
-
-          <ConfirmModal
-            isOpen={showLogoutModal}
-            title="Confirme os dados"
-            message={<>Realizar cadastro? {formatMessage(veiculoMessage)}</>}
-            onConfirm={null}
-            onCancel={() => setShowLogoutModal(false)}
-          />
         </div>
+
+        <ConfirmModal
+          isOpen={showConfirmModal}
+          title="Confirme os dados"
+          message={<>{formatMessage(veiculoMessage)}</>}
+          onConfirm={handleConfirm}
+          onCancel={() => setShowConfirmModal(false)}
+        />
       </form>
     </>
   );

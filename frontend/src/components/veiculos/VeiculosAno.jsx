@@ -1,54 +1,49 @@
-import { useContext, useEffect, useState } from "react";
-import Select from "react-select";
-import { NovoVeiculoContext } from "../../contexts/NovoVeiculoContext";
-import axios from "axios";
-import ComponentLoader from "../ComponentLoader";
+import AsyncSelect from "react-select/async";
+import { useNovoVeiculo } from "../../contexts/NovoVeiculoContext";
+import { apiBackend } from "../../services/apiBackend";
+import { useEffect, useState } from "react";
 
 const VeiculosAno = () => {
-  const [anos, setAnos] = useState([]);
-  const [isLoading, setIsLoading] = useState();
-  const { setVeiculo, tipoNumerico, marcaNumerica, modeloNumerico } = useContext(NovoVeiculoContext);
+  const { veiculo, setVeiculo } = useNovoVeiculo();
+  const [opcoes, setOpcoes] = useState([]);
 
   useEffect(() => {
-    const getAnos = async () => {
+    const carregar = async () => {
+      if (!veiculo.tipo || !veiculo.marca || !veiculo.modelo) return;
+
       try {
-        setIsLoading(true);
-        const req = await axios.post(
-          `${import.meta.env.VITE_BACKEND_URL}/api/fipe/${tipoNumerico}/${marcaNumerica}/${modeloNumerico}`
-        );
+        const marcas = await apiBackend.getFipeMarcas(veiculo.tipo);
+        const marcaSelecionada = marcas.find((m) => m.label === veiculo.marca);
+        if (!marcaSelecionada) return;
 
-        const anosFormatados = req.data.data.map((marca) => ({
-          value: String(marca.Value),
-          label: marca.Label,
-        }));
+        const modelos = await apiBackend.getFipeModelos(veiculo.tipo, marcaSelecionada.value);
+        const modeloSelecionado = modelos.find((m) => m.label === veiculo.modelo);
+        if (!modeloSelecionado) return;
 
-        setAnos(anosFormatados);
-      } catch (error) {
-        const msg = "Erro inesperado.";
-        return msg;
-        // toast.error(msg);
-        // setErroDaApi(error);
-      } finally {
-        setIsLoading(false);
+        const anos = await apiBackend.getFipeAnos(veiculo.tipo, marcaSelecionada.value, modeloSelecionado.value);
+        setOpcoes(anos);
+      } catch (err) {
+        console.error("Erro ao buscar anos:", err);
+        setOpcoes([]);
       }
     };
-
-    if (modeloNumerico) getAnos();
-  }, [modeloNumerico]);
-
-  const handleChange = (opcaoSelecionada) => {
-    setVeiculo((prevState) => ({ ...prevState, ano: opcaoSelecionada.label }));
-  };
+    carregar();
+  }, [veiculo.tipo, veiculo.marca, veiculo.modelo]);
 
   return (
-    <div className="text-center font-sans p-3">
-      {/* <h2 className={`text-xl md:text-2xl font-semibold mb-2 ${veiculo.modelo ? "text-green-800" : "text-black"}`}>
-        Selecione um ano:
-      </h2> */}
-      <ComponentLoader isLoading={isLoading}>
-        <Select options={anos} onChange={handleChange} placeholder="Selecione um ano..." />
-      </ComponentLoader>
-    </div>
+    <AsyncSelect
+      cacheOptions
+      defaultOptions={opcoes}
+      loadOptions={() => Promise.resolve(opcoes)}
+      value={veiculo.ano ? { label: veiculo.ano, value: veiculo.ano } : null}
+      onChange={(option) => {
+        setVeiculo((prev) => ({
+          ...prev,
+          ano: option?.label || "",
+        }));
+      }}
+      placeholder="Selecione o ano"
+    />
   );
 };
 

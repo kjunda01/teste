@@ -1,10 +1,17 @@
 const TipoVeiculoCard = ({ tipo, tipoNumericoAtual, setVeiculo, setTipoNumerico, Icone, descricao }) => {
   const isSelecionado = tipoNumericoAtual === tipo.valor;
 
-  const handleClick = () => {
-    setVeiculo((prev) => ({ ...prev, tipo: tipo.nome }));
-    setTipoNumerico(tipo.valor);
-  };
+const handleClick = () => {
+  setVeiculo((prev) => ({
+    ...prev,
+    tipo: String(tipo.valor), // agora vai POSTar /fipe/1, /fipe/2 etc.
+    marca: "",
+    modelo: "",
+    ano: "",
+  }));
+  setTipoNumerico(tipo.valor);
+};
+
 
   return (
     <div
