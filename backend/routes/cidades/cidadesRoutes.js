@@ -6,5 +6,6 @@ import { cidadesController } from "../../controllers/cidades/cidadesController.j
 const cidadesRoutes = Router();
 
 cidadesRoutes.get("/", cacheMiddleware, cidadesController.readAllView);
+cidadesRoutes.get("/busca", cacheMiddleware, cidadesController.buscarPorTermo);
 
 export default cidadesRoutes;

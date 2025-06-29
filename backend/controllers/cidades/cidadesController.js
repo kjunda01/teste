@@ -16,6 +16,23 @@ const readAllView = async (req, res, next) => {
   }
 };
 
+const buscarPorTermo = async (req, res, next) => {
+  try {
+    const { q } = req.query;
+
+    if (!q || q.length < 2) {
+      return res.status(400).json({ message: "Digite pelo menos 2 caracteres" });
+    }
+
+    const resultado = await cidadesService.buscarPorTermo(q);
+
+    return res.status(200).json(resultado);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const cidadesController = {
   readAllView,
+  buscarPorTermo,
 };

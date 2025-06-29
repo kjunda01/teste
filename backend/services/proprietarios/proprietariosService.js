@@ -58,6 +58,21 @@ const remove = async (matricula) => {
   return result.rowCount === 1;
 };
 
+const buscarPorTermo = async (termo) => {
+  const query = `
+   SELECT value, label
+   FROM vw_proprietarios_async_select
+   WHERE
+     nome_busca ILIKE immutable_unaccent($1) OR
+     matricula_busca ILIKE immutable_unaccent($1)
+   ORDER BY label
+   LIMIT 20;
+ `;
+
+  const { rows } = await bancoDeDados.query(query, [`%${termo}%`]);
+  return rows;
+};
+
 export const proprietariosService = {
   create,
   readAllTabela,
@@ -66,4 +81,5 @@ export const proprietariosService = {
   readSingleView,
   update,
   remove,
+  buscarPorTermo,
 };

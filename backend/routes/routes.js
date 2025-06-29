@@ -11,7 +11,7 @@ export const routes = {
   "/fipe": fipeRoutes,
   "/db/veiculos": veiculosRoutes,
   "/db/proprietarios": proprietariosRoutes,
-  "db/cidades": cidadesRoutes,
+  "/db/cidades": cidadesRoutes,
   "/db/hora": tempoRoutes, // Teste de conexão com o banco
   "/": fallbackRoutes, // Fallback para rotas não-API
 };
